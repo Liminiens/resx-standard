@@ -10,8 +10,7 @@ namespace Test
         static void Main(string[] args)
         {
             var reader =
-                new ResXResourceReader(
-                    "C:\\Users\\User\\Documents\\Visual Studio 2017\\Projects\\Resx\\Test\\Resource2.resx")
+                new ResXResourceReader("C:\\Users\\User\\Documents\\Visual Studio 2017\\Projects\\Resx\\tests\\Resx.Tests\\bin\\Debug\\netcoreapp2.0\\Resource2.resx")
                 {
                     UseResXDataNodes = true
                 };

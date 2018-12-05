@@ -1,7 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using Resx.Utility;
 using System;
 using System.Collections;
@@ -303,7 +299,7 @@ namespace Resx.Resources
                 }
             }
         }
-        
+
         /// <summary>
         ///     Creates a reader with the specified file contents.
         /// </summary>
@@ -311,7 +307,7 @@ namespace Resx.Resources
         {
             return FromFileContents(fileContents, (ITypeResolutionService)null);
         }
-        
+
         /// <internalonly/>
         /// <summary>
         ///     Creates a reader with the specified file contents.
@@ -322,7 +318,7 @@ namespace Resx.Resources
             result.fileContents = fileContents;
             return result;
         }
-        
+
         /// <internalonly/>
         /// <summary>
         ///     Creates a reader with the specified file contents.
@@ -333,14 +329,14 @@ namespace Resx.Resources
             result.fileContents = fileContents;
             return result;
         }
-        
+
         /// <internalonly/>
         // NOTE: Part of IEnumerable - not protected by class level LinkDemand.
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-        
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
@@ -351,7 +347,7 @@ namespace Resx.Resources
             EnsureResData();
             return resData.GetEnumerator();
         }
-        
+
         /// <summary>
         ///    Returns a dictionary enumerator that can be used to enumerate the <metadata> elements in the .resx file.
         /// </summary>
