@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -191,7 +192,7 @@ namespace Resx.Resources
                     {
                         fileRefFullPath = fileRefDetails[0];
                     }
-                    fileRefType = fileRefDetails[1];
+                    fileRefType = Type.GetType(String.Join(",", fileRefDetails[1].Split(',').Take(2)), true).AssemblyQualifiedName;
                     if (fileRefDetails.Length > 2)
                     {
                         fileRefTextEncoding = fileRefDetails[2];
@@ -723,11 +724,11 @@ namespace Resx.Resources
                     // we have the FQN for this type
                     if (FileRefTextEncoding != null)
                     {
-                        fileRef = new ResXFileRef(FileRefFullPath, FileRefType, Encoding.GetEncoding(FileRefTextEncoding));
+                        fileRef = new ResXFileRef(FileRefFullPath, objectType.AssemblyQualifiedName, Encoding.GetEncoding(FileRefTextEncoding));
                     }
                     else
                     {
-                        fileRef = new ResXFileRef(FileRefFullPath, FileRefType);
+                        fileRef = new ResXFileRef(FileRefFullPath, objectType.AssemblyQualifiedName);
                     }
                     TypeConverter tc = TypeDescriptor.GetConverter(typeof(ResXFileRef));
                     result = tc.ConvertFrom(fileRef.ToString());
