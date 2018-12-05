@@ -823,10 +823,14 @@ namespace Resx.Resources
 
                 if (t == null)
                 {
-                    var typeNames = typeName.Split(',');
-                    if (typeNames.Length > 0)
+                    var testTypeName = String.Join(",", typeName.Split(',').Take(2));
+                    if (testTypeName.Length > 0)
                     {
-                        t = Type.GetType(typeNames[0], false);
+                        t = Type.GetType(testTypeName, false);
+                        if (t == null && testTypeName.Contains("System.Drawing.Bitmap"))
+                        {
+                            t = typeof(Bitmap);
+                        }
                     }
                 }
             }
