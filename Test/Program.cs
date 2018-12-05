@@ -9,8 +9,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            var reader = new ResXResourceReader("C:\\Users\\User\\Documents\\Visual Studio 2017\\Projects\\Resx\\Test\\Resource1.resx");
-            reader.UseResXDataNodes = true;
+            var reader =
+                new ResXResourceReader(
+                    "C:\\Users\\User\\Documents\\Visual Studio 2017\\Projects\\Resx\\Test\\Resource2.resx")
+                {
+                    UseResXDataNodes = true
+                };
             foreach (DictionaryEntry entry in reader)
             {
                 var node = (ResXDataNode)entry.Value;

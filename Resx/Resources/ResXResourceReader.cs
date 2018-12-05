@@ -493,46 +493,6 @@ namespace Resx.Resources
                     resMetadata = null;
                 }
             }
-
-            bool validFile = false;
-
-            if (object.Equals(resHeaderMimeType, ResXResourceWriter.ResMimeType))
-            {
-
-                Type readerType = typeof(ResXResourceReader);
-                Type writerType = typeof(ResXResourceWriter);
-
-#if !NETSTANDARD2_0
-                string readerTypeName = resHeaderReaderType;
-                string writerTypeName = resHeaderWriterType;
-                if (readerTypeName != null && readerTypeName.IndexOf(',') != -1)
-                {
-                    readerTypeName = readerTypeName.Split(new char[] { ',' })[0].Trim();
-                }
-                if (writerTypeName != null && writerTypeName.IndexOf(',') != -1)
-                {
-                    writerTypeName = writerTypeName.Split(new char[] { ',' })[0].Trim();
-                }
-
-
-                if (readerTypeName != null &&
-                    writerTypeName != null &&
-                    readerTypeName.Equals(readerType.FullName) &&
-                    writerTypeName.Equals(writerType.FullName))
-                {
-                    validFile = true;
-                }
-#else
-                validFile = true;
-#endif
-            }
-
-            if (!validFile)
-            {
-                resData = null;
-                resMetadata = null;
-                throw new ArgumentException(SR.InvalidResXFileReaderWriterTypes);
-            }
         }
 
         private void ParseResHeaderNode(XmlReader reader)

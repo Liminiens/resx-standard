@@ -44,11 +44,11 @@ namespace Resx.Resources
 
         private IFormatter binaryFormatter = null;
 
-#if !NETSTANDARD2_0
+#if NETFRAMEWORK
         // this is going to be used to check if a ResXDataNode is of type ResXFileRef
         private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { new AssemblyName("System.Windows.Forms") });
 #else
-        private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[]{});
+        private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { });
 #endif
         // call back function to get type name for multitargeting.
         // No public property to force using constructors for the following reasons:
@@ -167,7 +167,6 @@ namespace Resx.Resources
             // and we can't be sure that we have a typeResolutionService that can 
             // recognize this. It's not very clean but this should work.
             Type nodeType = null;
-#if NETSTANDARD2_0
             if (nodeInfo.TypeName != null)
             {
                 if (nodeInfo.TypeName.Contains("ResXFileRef"))
@@ -187,10 +186,6 @@ namespace Resx.Resources
             {
                 nodeType = typeof(string);
             }
-#else
-            if (!string.IsNullOrEmpty(nodeInfo.TypeName)) // can be null if we have a string (default for string is TypeName == null)
-                nodeType = internalTypeResolver.GetType(nodeInfo.TypeName, false, true);
-#endif
             if (nodeType != null && nodeType.Equals(typeof(ResXFileRef)))
             {
                 // we have a fileref, split the value data and populate the fields
@@ -497,12 +492,24 @@ namespace Resx.Resources
                             if (tc.CanConvertFrom(typeof(byte[])))
                             {
                                 string text = dataNodeInfo.ValueData;
-                                byte[] serializedData;
-                                serializedData = FromBase64WrappedString(text);
+                                byte[] serializedData = FromBase64WrappedString(text);
 
                                 if (serializedData != null)
                                 {
                                     result = tc.ConvertFrom(serializedData);
+                                }
+                            }
+                            else
+                            {
+                                string text = dataNodeInfo.ValueData;
+                                byte[] serializedData = FromBase64WrappedString(text);
+                                if (serializedData != null)
+                                {
+                                    var bitmap = BitmapUtility.CreateFromArray(serializedData);
+                                    if (bitmap != null)
+                                    {
+                                        result = bitmap;
+                                    }
                                 }
                             }
                         }
@@ -786,7 +793,6 @@ namespace Resx.Resources
 
         private static byte[] FromBase64WrappedString(string text)
         {
-
             if (text.IndexOfAny(SpecialChars) != -1)
             {
                 StringBuilder sb = new StringBuilder(text.Length);
