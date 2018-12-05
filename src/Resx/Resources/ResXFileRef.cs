@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Versioning;
@@ -294,7 +295,8 @@ namespace Resx.Resources
                 {
                     string[] parts = ParseResxFileRefString(stringValue);
                     string fileName = parts[0];
-                    Type toCreate = Type.GetType(parts[1], true);
+                    string typeName = String.Join(",", parts[1].Split(',').Take(2));
+                    Type toCreate = Type.GetType(typeName, true);
 
                     // special case string and byte[]
                     if (toCreate.Equals(typeof(string)))
