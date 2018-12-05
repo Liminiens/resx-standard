@@ -1,7 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,7 +12,6 @@ using System.Text;
 
 namespace Resx.Resources
 {
-    /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef"]/*' />
     /// <devdoc>
     ///     ResX File Reference class. This allows the developer to represent
     ///     a link to an external resource. When the resource manager asks
@@ -31,7 +26,6 @@ namespace Resx.Resources
         [OptionalField(VersionAdded = 2)]
         private Encoding textFileEncoding;
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.ResXFileRef"]/*' />
         /// <devdoc>
         ///     Creates a new ResXFileRef that points to the specified file.
         ///     The type refered to by typeName must support a constructor
@@ -64,7 +58,6 @@ namespace Resx.Resources
         {
         }
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.ResXFileRef"]/*' />
         /// <devdoc>
         ///     Creates a new ResXFileRef that points to the specified file.
         ///     The type refered to by typeName must support a constructor
@@ -80,8 +73,6 @@ namespace Resx.Resources
             return new ResXFileRef(fileName, typeName, textFileEncoding);
         }
 
-
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.FileName"]/*' />
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
@@ -93,7 +84,6 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.TextFileEncoding"]/*' />
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
@@ -105,7 +95,6 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.TextFileEncoding"]/*' />
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
@@ -117,8 +106,6 @@ namespace Resx.Resources
             }
         }
 
-
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.PathDifference"]/*' />
         /// <devdoc>
         ///    path1+result = path2
         ///   A string which is the relative path difference between path1 and
@@ -175,7 +162,6 @@ namespace Resx.Resources
             fileName = PathDifference(basePath, fileName, false);
         }
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.ToString"]/*' />
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
@@ -199,13 +185,11 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.Converter"]/*' />
         /// <devdoc>
         ///    <para>[To be supplied.]</para>
         /// </devdoc>
         public class Converter : TypeConverter
         {
-            /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.Converter.CanConvertFrom"]/*' />
             /// <devdoc>
             ///    <para>[To be supplied.]</para>
             /// </devdoc>
@@ -219,7 +203,6 @@ namespace Resx.Resources
                 return false;
             }
 
-            /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.Converter.CanConvertTo"]/*' />
             /// <devdoc>
             ///    <para>[To be supplied.]</para>
             /// </devdoc>
@@ -233,7 +216,6 @@ namespace Resx.Resources
                 return false;
             }
 
-            /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.Converter.ConvertTo"]/*' />
             /// <devdoc>
             ///    <para>[To be supplied.]</para>
             /// </devdoc>
@@ -297,7 +279,6 @@ namespace Resx.Resources
                 return result;
             }
 
-            /// <include file='doc\ResXFileRef.uex' path='docs/doc[@for="ResXFileRef.Converter.ConvertFrom"]/*' />
             /// <devdoc>
             ///    <para>[To be supplied.]</para>
             /// </devdoc>
@@ -374,5 +355,3 @@ namespace Resx.Resources
         }
     }
 }
-
-

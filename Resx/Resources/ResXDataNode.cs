@@ -1,7 +1,3 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using Resx.Utility;
 using System;
 using System.Collections;
@@ -25,7 +21,6 @@ namespace Resx.Resources
     [Serializable]
     public sealed class ResXDataNode : ISerializable
     {
-
         private static readonly char[] SpecialChars = new char[] { ' ', '\r', '\n' };
 
         private DataNodeInfo nodeInfo;
@@ -44,12 +39,8 @@ namespace Resx.Resources
 
         private IFormatter binaryFormatter = null;
 
-#if NETFRAMEWORK
-        // this is going to be used to check if a ResXDataNode is of type ResXFileRef
-        private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { new AssemblyName("System.Windows.Forms") });
-#else
         private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { });
-#endif
+
         // call back function to get type name for multitargeting.
         // No public property to force using constructors for the following reasons:
         // 1. one of the constructors needs this field (if used) to initialize the object, make it consistent with the other ctrs to avoid errors.
@@ -209,11 +200,6 @@ namespace Resx.Resources
             }
         }
 
-
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.Comment"]/*' />
-        /// <devdoc>
-        ///    
-        /// </devdoc>
         public string Comment
         {
             get
@@ -231,10 +217,6 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.Name"]/*' />
-        /// <devdoc>
-        ///    
-        /// </devdoc>
         public string Name
         {
             get
@@ -264,10 +246,6 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.FileRef"]/*' />
-        /// <devdoc>
-        ///    
-        /// </devdoc>
         public ResXFileRef FileRef
         {
             get
@@ -290,7 +268,6 @@ namespace Resx.Resources
                 return fileRef;
             }
         }
-
 
         private string FileRefFullPath
         {
@@ -446,7 +423,6 @@ namespace Resx.Resources
             }
 
         }
-
 
         private object GenerateObjectFromDataNodeInfo(DataNodeInfo dataNodeInfo, ITypeResolutionService typeResolver)
         {
@@ -617,11 +593,10 @@ namespace Resx.Resources
             return nodeInfo;
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetNodePosition"]/*' />
-        /// <devdoc>
+        /// <summary>
         ///    Might return the position in the resx file of the current node, if known
         ///    otherwise, will return Point(0,0) since point is a struct 
-        /// </devdoc>
+        /// </summary>
         public Point GetNodePosition()
         {
             if (nodeInfo == null)
@@ -634,11 +609,10 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetValueTypeName"]/*' />
-        /// <devdoc>
+        /// <summary>
         ///    Get the FQ type name for this datanode.
         ///    We return typeof(object) for ResXNullRef
-        /// </devdoc>
+        /// </summary>
         public string GetValueTypeName(ITypeResolutionService typeResolver)
         {
             // the type name here is always a FQN
@@ -721,7 +695,6 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetValueTypeName1"]/*' />
         /// <devdoc>
         ///    Get the FQ type name for this datanode
         /// </devdoc>
@@ -730,7 +703,6 @@ namespace Resx.Resources
             return GetValueTypeName(new AssemblyNamesTypeResolutionService(names));
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetValue"]/*' />
         /// <devdoc>
         ///    Get the value contained in this datanode
         /// </devdoc>
@@ -782,7 +754,6 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetValue1"]/*' />
         /// <devdoc>
         ///    Get the value contained in this datanode
         /// </devdoc>
@@ -816,7 +787,6 @@ namespace Resx.Resources
                 return Convert.FromBase64String(text);
             }
         }
-
 
         private Type ResolveType(string typeName, ITypeResolutionService typeResolver)
         {
@@ -856,12 +826,10 @@ namespace Resx.Resources
             return t;
         }
 
-
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.GetObjectData"]/*' />
         /// <devdoc>
         ///    Get the value contained in this datanode
         /// </devdoc>        
-        // NOTE: No LinkDemand for SerializationFormatter necessary here, since this class already  
+        // NOTE: No LinkDemand for SerializationFormatter necessary here, since this class already
         // has a FullTrust LinkDemand.
         void ISerializable.GetObjectData(SerializationInfo si, StreamingContext context)
         {

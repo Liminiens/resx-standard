@@ -17,12 +17,9 @@ using System.Xml;
 
 namespace Resx.Resources
 {
-
-    /// <include file='doc\ResXResourceReader.uex' path='docs/doc[@for="ResXResourceReader"]/*' />
     /// <devdoc>
     ///     ResX resource reader.
     /// </devdoc>
-
     public class ResXResourceReader : IResourceReader
     {
         //static readonly char[] SpecialChars = new char[]{' ', '\r', '\n'};
@@ -183,28 +180,6 @@ namespace Resx.Resources
             }
         }
 
-#if UNUSED
-        /// <devdoc>
-        ///     Retrieves the resource data set. This will demand load it.
-        /// </devdoc>
-        private ListDictionary ResData {
-            get {
-                EnsureResData();
-                return resData;
-            }
-        }
-
-        /// <devdoc>
-        ///     Returns the typeResolver used to find types defined in the ResX contents.
-        /// </devdoc>
-        private ITypeResolutionService TypeResolver {
-            get {
-                return this.typeResolver;
-            }
-        }
-#endif
-
-        /// <include file='doc\ResXResourceReader.uex' path='docs/doc[@for="ResXResourceReader.ResXResourceReader5"]/*' />
         /// <devdoc>
         ///     ResXFileRef's TypeConverter automatically unwraps it, creates the referenced
         ///     object and returns it. This property gives the user control over whether this unwrapping should
@@ -227,7 +202,6 @@ namespace Resx.Resources
             }
         }
 
-        /// <include file='doc\ResXResourceReader.uex' path='docs/doc[@for="ResXResourceReader.Close"]/*' />
         /// <devdoc>
         ///     Closes and files or streams being used by the reader.
         /// </devdoc>
@@ -237,7 +211,6 @@ namespace Resx.Resources
             ((IDisposable)this).Dispose();
         }
 
-        /// <include file='doc\ResXResourceReader.uex' path='docs/doc[@for="ResXResourceReader.IDisposable.Dispose"]/*' />
         /// <internalonly/>
         // NOTE: Part of IDisposable - not protected by class level LinkDemand.
         void IDisposable.Dispose()
@@ -246,7 +219,6 @@ namespace Resx.Resources
             Dispose(true);
         }
 
-        /// <include file='doc\ResXResourceReader.uex' path='docs/doc[@for="ResXResourceReader.Dispose"]/*' />
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
