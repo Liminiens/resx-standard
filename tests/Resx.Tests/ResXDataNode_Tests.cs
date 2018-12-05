@@ -34,12 +34,12 @@ namespace Resx.Tests
             {
                 reader.UseResXDataNodes = true;
 
-                var file = reader
+                var photo = reader
                     .Cast<DictionaryEntry>()
                     .Select(x => (ResXDataNode)x.Value)
                     .First(x => x.Name == "Flowers");
 
-                var value = (Bitmap)file.GetValue((ITypeResolutionService)null);
+                var value = (Bitmap)photo.GetValue((ITypeResolutionService)null);
 
                 Assert.NotNull(value);
                 Assert.False(value.Size.IsEmpty);
@@ -53,12 +53,12 @@ namespace Resx.Tests
             {
                 reader.UseResXDataNodes = true;
 
-                var file = reader
+                var other = reader
                     .Cast<DictionaryEntry>()
                     .Select(x => (ResXDataNode)x.Value)
                     .First(x => x.FileRef.FileName == "Resources\\cello82.mp3");
 
-                var value = (byte[])file.GetValue((ITypeResolutionService)null);
+                var value = (byte[])other.GetValue((ITypeResolutionService)null);
 
                 Assert.NotNull(value);
                 Assert.True(value.Length > 0);
@@ -81,6 +81,26 @@ namespace Resx.Tests
 
                 Assert.NotNull(value);
                 Assert.True(value.Length > 0);
+            }
+        }
+
+        [Fact]
+        public void String_WhenRetrieved_IsCorrect()
+        {
+            using (var reader = new ResXResourceReader(TestResxFile.File()))
+            {
+                reader.UseResXDataNodes = true;
+
+                var str = reader
+                    .Cast<DictionaryEntry>()
+                    .Select(x => (ResXDataNode)x.Value)
+                    .First(x => x.Name == "Example");
+
+                var value = (string)str.GetValue((ITypeResolutionService)null);
+
+                Assert.NotNull(value);
+                Assert.Equal("Something", value);
+                Assert.Equal("Comment", str.Comment);
             }
         }
     }

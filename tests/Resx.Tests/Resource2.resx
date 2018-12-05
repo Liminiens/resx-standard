@@ -2872,4 +2872,8 @@
         p9ALTHgVNMGnJGlpt7BTlO3/A1mUi26dYTwNAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="Example" xml:space="preserve">
+    <value>Something</value>
+    <comment>Comment</comment>
+  </data>
 </root>
