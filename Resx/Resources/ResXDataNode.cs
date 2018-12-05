@@ -44,9 +44,12 @@ namespace Resx.Resources
 
         private IFormatter binaryFormatter = null;
 
+#if !NETSTANDARD2_0
         // this is going to be used to check if a ResXDataNode is of type ResXFileRef
         private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { new AssemblyName("System.Windows.Forms") });
-
+#else
+        private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[]{});
+#endif
         // call back function to get type name for multitargeting.
         // No public property to force using constructors for the following reasons:
         // 1. one of the constructors needs this field (if used) to initialize the object, make it consistent with the other ctrs to avoid errors.
