@@ -793,12 +793,10 @@ namespace Resx.Resources
             Type t = null;
             if (typeResolver != null)
             {
-
                 // If we cannot find the strong-named type, then try to see
                 // if the TypeResolver can bind to partial names. For this, 
                 // we will strip out the partial names and keep the rest of the
                 // strong-name information to try again.
-                //
 
                 t = typeResolver.GetType(typeName, false);
                 if (t == null)
@@ -821,6 +819,15 @@ namespace Resx.Resources
             if (t == null)
             {
                 t = Type.GetType(typeName, false);
+
+                if (t == null)
+                {
+                    var typeNames = typeName.Split(',');
+                    if (typeNames.Length > 0)
+                    {
+                        t = Type.GetType(typeNames[0], false);
+                    }
+                }
             }
 
             return t;
