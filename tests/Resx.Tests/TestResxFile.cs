@@ -1,9 +1,14 @@
 using System.IO;
+using System.Text;
 
 namespace Resx.Tests
 {
     public static class TestResxFile
     {
-        public static readonly string File = Path.Combine(Directory.GetCurrentDirectory(), "Resource2.resx");
+        public static string File()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            return Path.Combine(Directory.GetCurrentDirectory(), "Resource2.resx");
+        }
     }
 }
