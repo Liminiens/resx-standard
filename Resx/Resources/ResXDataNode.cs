@@ -53,9 +53,9 @@ namespace Resx.Resources
         {
         }
 
-        // <devdoc>
+        // <summary>
         // this is a deep clone
-        //</devdoc>
+        //</summary>
         internal ResXDataNode DeepClone()
         {
             ResXDataNode result = new ResXDataNode();
@@ -74,9 +74,9 @@ namespace Resx.Resources
         }
 
         /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.ResXDataNode"]/*' />
-        /// <devdoc>
+        /// <summary>
         ///    
-        /// </devdoc>        
+        /// </summary>        
         public ResXDataNode(string name, object value) : this(name, value, null)
         {
         }
@@ -113,9 +113,9 @@ namespace Resx.Resources
         }
 
         /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.ResXDataNode2"]/*' />
-        /// <devdoc>
+        /// <summary>
         ///    
-        /// </devdoc>  
+        /// </summary>  
         public ResXDataNode(string name, ResXFileRef fileRef) : this(name, fileRef, null)
         {
         }
@@ -695,17 +695,17 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    Get the FQ type name for this datanode
-        /// </devdoc>
+        /// </summary>
         public string GetValueTypeName(AssemblyName[] names)
         {
             return GetValueTypeName(new AssemblyNamesTypeResolutionService(names));
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    Get the value contained in this datanode
-        /// </devdoc>
+        /// </summary>
         public object GetValue(ITypeResolutionService typeResolver)
         {
 
@@ -754,9 +754,9 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    Get the value contained in this datanode
-        /// </devdoc>
+        /// </summary>
         public object GetValue(AssemblyName[] names)
         {
             return GetValue(new AssemblyNamesTypeResolutionService(names));
@@ -826,9 +826,9 @@ namespace Resx.Resources
             return t;
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    Get the value contained in this datanode
-        /// </devdoc>        
+        /// </summary>        
         // NOTE: No LinkDemand for SerializationFormatter necessary here, since this class already
         // has a FullTrust LinkDemand.
         void ISerializable.GetObjectData(SerializationInfo si, StreamingContext context)
@@ -1178,9 +1178,9 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <devdoc>
+        /// <summary>
         /// This is matching %windir%\Microsoft.NET\Framework*, so both 32bit and 64bit framework will be covered.
-        /// </devdoc>
+        /// </summary>
         private bool IsNetFrameworkAssembly(string assemblyPath)
         {
             return assemblyPath != null && assemblyPath.StartsWith(NetFrameworkPath, StringComparison.OrdinalIgnoreCase);

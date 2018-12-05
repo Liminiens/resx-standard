@@ -12,11 +12,11 @@ using System.Text;
 
 namespace Resx.Resources
 {
-    /// <devdoc>
+    /// <summary>
     ///     ResX File Reference class. This allows the developer to represent
     ///     a link to an external resource. When the resource manager asks
     ///     for the value of the resource item, the external resource is loaded.
-    /// </devdoc>
+    /// </summary>
     [TypeConverter(typeof(Converter))]
     [Serializable]
     public class ResXFileRef
@@ -26,11 +26,11 @@ namespace Resx.Resources
         [OptionalField(VersionAdded = 2)]
         private Encoding textFileEncoding;
 
-        /// <devdoc>
+        /// <summary>
         ///     Creates a new ResXFileRef that points to the specified file.
         ///     The type refered to by typeName must support a constructor
         ///     that accepts a System.IO.Stream as a parameter.
-        /// </devdoc>
+        /// </summary>
         public ResXFileRef(string fileName, string typeName)
         {
             if (fileName == null)
@@ -58,11 +58,11 @@ namespace Resx.Resources
         {
         }
 
-        /// <devdoc>
+        /// <summary>
         ///     Creates a new ResXFileRef that points to the specified file.
         ///     The type refered to by typeName must support a constructor
         ///     that accepts a System.IO.Stream as a parameter.
-        /// </devdoc>
+        /// </summary>
         public ResXFileRef(string fileName, string typeName, Encoding textFileEncoding) : this(fileName, typeName)
         {
             this.textFileEncoding = textFileEncoding;
@@ -73,9 +73,9 @@ namespace Resx.Resources
             return new ResXFileRef(fileName, typeName, textFileEncoding);
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    <para>[To be supplied.]</para>
-        /// </devdoc>
+        /// </summary>
         public string FileName
         {
             get
@@ -84,9 +84,9 @@ namespace Resx.Resources
             }
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    <para>[To be supplied.]</para>
-        /// </devdoc>
+        /// </summary>
         public string TypeName
         {
             get
@@ -95,9 +95,9 @@ namespace Resx.Resources
             }
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    <para>[To be supplied.]</para>
-        /// </devdoc>
+        /// </summary>
         public Encoding TextFileEncoding
         {
             get
@@ -106,12 +106,12 @@ namespace Resx.Resources
             }
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    path1+result = path2
         ///   A string which is the relative path difference between path1 and
         ///  path2 such that if path1 and the calculated difference are used
         ///  as arguments to Combine(), path2 is returned
-        /// </devdoc>
+        /// </summary>
         private static string PathDifference(string path1, string path2, bool compareCase)
         {
             int i;
@@ -162,9 +162,9 @@ namespace Resx.Resources
             fileName = PathDifference(basePath, fileName, false);
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    <para>[To be supplied.]</para>
-        /// </devdoc>
+        /// </summary>
         public override string ToString()
         {
             string result = "";
@@ -185,14 +185,14 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <devdoc>
+        /// <summary>
         ///    <para>[To be supplied.]</para>
-        /// </devdoc>
+        /// </summary>
         public class Converter : TypeConverter
         {
-            /// <devdoc>
+            /// <summary>
             ///    <para>[To be supplied.]</para>
-            /// </devdoc>
+            /// </summary>
             public override bool CanConvertFrom(ITypeDescriptorContext context,
                 Type sourceType)
             {
@@ -203,9 +203,9 @@ namespace Resx.Resources
                 return false;
             }
 
-            /// <devdoc>
+            /// <summary>
             ///    <para>[To be supplied.]</para>
-            /// </devdoc>
+            /// </summary>
             public override bool CanConvertTo(ITypeDescriptorContext context,
                 Type destinationType)
             {
@@ -216,9 +216,9 @@ namespace Resx.Resources
                 return false;
             }
 
-            /// <devdoc>
+            /// <summary>
             ///    <para>[To be supplied.]</para>
-            /// </devdoc>
+            /// </summary>
             public override Object ConvertTo(ITypeDescriptorContext context,
                 CultureInfo culture,
                 Object value,
@@ -279,9 +279,9 @@ namespace Resx.Resources
                 return result;
             }
 
-            /// <devdoc>
+            /// <summary>
             ///    <para>[To be supplied.]</para>
-            /// </devdoc>
+            /// </summary>
             [ResourceExposure(ResourceScope.Machine)]
             [ResourceConsumption(ResourceScope.Machine)]
             public override Object ConvertFrom(ITypeDescriptorContext context,
