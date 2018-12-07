@@ -240,23 +240,23 @@ namespace Resx.Resources
             }
         }
 
-        private void SetupNameTable(XmlReader reader)
+        private void SetupNameTable(XmlReader xmlReader)
         {
-            reader.NameTable.Add(ResXResourceWriter.TypeStr);
-            reader.NameTable.Add(ResXResourceWriter.NameStr);
-            reader.NameTable.Add(ResXResourceWriter.DataStr);
-            reader.NameTable.Add(ResXResourceWriter.MetadataStr);
-            reader.NameTable.Add(ResXResourceWriter.MimeTypeStr);
-            reader.NameTable.Add(ResXResourceWriter.ValueStr);
-            reader.NameTable.Add(ResXResourceWriter.ResHeaderStr);
-            reader.NameTable.Add(ResXResourceWriter.VersionStr);
-            reader.NameTable.Add(ResXResourceWriter.ResMimeTypeStr);
-            reader.NameTable.Add(ResXResourceWriter.ReaderStr);
-            reader.NameTable.Add(ResXResourceWriter.WriterStr);
-            reader.NameTable.Add(ResXResourceWriter.BinSerializedObjectMimeType);
-            reader.NameTable.Add(ResXResourceWriter.SoapSerializedObjectMimeType);
-            reader.NameTable.Add(ResXResourceWriter.AssemblyStr);
-            reader.NameTable.Add(ResXResourceWriter.AliasStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.TypeStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.NameStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.DataStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.MetadataStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.MimeTypeStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.ValueStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.ResHeaderStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.VersionStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.ResMimeTypeStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.ReaderStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.WriterStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.BinSerializedObjectMimeType);
+            xmlReader.NameTable.Add(ResXResourceWriter.SoapSerializedObjectMimeType);
+            xmlReader.NameTable.Add(ResXResourceWriter.AssemblyStr);
+            xmlReader.NameTable.Add(ResXResourceWriter.AliasStr);
         }
 
         /// <summary>
@@ -291,6 +291,9 @@ namespace Resx.Resources
 
                         contentReader = new XmlTextReader(stream);
                     }
+
+                    if (contentReader == null)
+                        throw new InvalidOperationException("Contentent reader is null");
 
                     SetupNameTable(contentReader);
                     contentReader.WhitespaceHandling = WhitespaceHandling.None;

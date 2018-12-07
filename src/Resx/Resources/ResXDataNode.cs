@@ -22,14 +22,15 @@ namespace Resx.Resources
     [Serializable]
     public sealed class ResXDataNode : ISerializable
     {
-        private static readonly char[] SpecialChars = new char[] { ' ', '\r', '\n' };
+        private static readonly char[] SpecialChars = new[] {' ', '\r', '\n'};
 
         private DataNodeInfo nodeInfo;
 
         private string name;
         private string comment;
 
-        private string typeName; // is only used when we create a resxdatanode manually with an object and contains the FQN
+        /// is only used when we create a resxdatanode manually with an object and contains the FQN
+        private string typeName;
 
         private string fileRefFullPath;
         private string fileRefType;
@@ -40,7 +41,8 @@ namespace Resx.Resources
 
         private IFormatter binaryFormatter = null;
 
-        private static ITypeResolutionService internalTypeResolver = new AssemblyNamesTypeResolutionService(new AssemblyName[] { });
+        private static ITypeResolutionService internalTypeResolver =
+            new AssemblyNamesTypeResolutionService(new AssemblyName[] { });
 
         // call back function to get type name for multitargeting.
         // No public property to force using constructors for the following reasons:
@@ -60,7 +62,10 @@ namespace Resx.Resources
         internal ResXDataNode DeepClone()
         {
             ResXDataNode result = new ResXDataNode();
-            result.nodeInfo = (this.nodeInfo != null) ? this.nodeInfo.Clone() : null; // nodeinfo is just made up of immutable objects, we don't need to clone it
+            result.nodeInfo =
+                (this.nodeInfo != null)
+                    ? this.nodeInfo.Clone()
+                    : null; // nodeinfo is just made up of immutable objects, we don't need to clone it
             result.name = this.name;
             result.comment = this.comment;
 
@@ -74,24 +79,20 @@ namespace Resx.Resources
             return result;
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.ResXDataNode"]/*' />
-        /// <summary>
-        ///    
-        /// </summary>        
-        public ResXDataNode(string name, object value) : this(name, value, null)
-        {
-        }
 
         [SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
-        [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters") // "name" is the name of the param passed in.
-                                                                                                     // So we don't have to localize it.
+        [
+            SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters")
+            // "name" is the name of the param passed in.
+            // // So we don't have to localize it.
         ]
         public ResXDataNode(string name, object value, Func<Type, string> typeNameConverter)
         {
             if (name == null)
             {
-                throw (new ArgumentNullException("name"));
+                throw (new ArgumentNullException(nameof(name)));
             }
+
             if (name.Length == 0)
             {
                 throw (new ArgumentException("name"));
@@ -113,35 +114,31 @@ namespace Resx.Resources
             this.value = value;
         }
 
-        /// <include file='doc\ResXDataNode.uex' path='docs/doc[@for="ResXDataNode.ResXDataNode2"]/*' />
-        /// <summary>
-        ///    
-        /// </summary>  
-        public ResXDataNode(string name, ResXFileRef fileRef) : this(name, fileRef, null)
+        public ResXDataNode(string name, ResXFileRef fileRef)
+            : this(name, fileRef, null)
         {
         }
 
         [SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
         [
-            SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters") // "name" is the name of the param passed in.
-                                                                                                        // So we don't have to localize it.
+            SuppressMessage("Microsoft.Globalization",
+                "CA1303:DoNotPassLiteralsAsLocalizedParameters") // "name" is the name of the param passed in.
+            // So we don't have to localize it.
         ]
         public ResXDataNode(string name, ResXFileRef fileRef, Func<Type, string> typeNameConverter)
         {
             if (name == null)
             {
-                throw (new ArgumentNullException("name"));
+                throw (new ArgumentNullException(nameof(name)));
             }
-            if (fileRef == null)
-            {
-                throw (new ArgumentNullException("fileRef"));
-            }
+
             if (name.Length == 0)
             {
                 throw (new ArgumentException("name"));
             }
+
             this.name = name;
-            this.fileRef = fileRef;
+            this.fileRef = fileRef ?? throw (new ArgumentNullException(nameof(fileRef)));
             this.typeNameConverter = typeNameConverter;
         }
 
@@ -153,7 +150,6 @@ namespace Resx.Resources
 
         private void InitializeDataNode(string basePath)
         {
-
             // we can only use our internal type resolver here
             // because we only want to check if this is a ResXFileRef node
             // and we can't be sure that we have a typeResolutionService that can 
@@ -178,7 +174,8 @@ namespace Resx.Resources
             {
                 nodeType = typeof(string);
             }
-            if (nodeType != null && nodeType.Equals(typeof(ResXFileRef)))
+
+            if (nodeType != null && nodeType == typeof(ResXFileRef))
             {
                 // we have a fileref, split the value data and populate the fields
                 string[] fileRefDetails = ResXFileRef.Converter.ParseResxFileRefString(nodeInfo.ValueData);
@@ -192,7 +189,9 @@ namespace Resx.Resources
                     {
                         fileRefFullPath = fileRefDetails[0];
                     }
-                    fileRefType = Type.GetType(String.Join(",", fileRefDetails[1].Split(',').Take(2)), true).AssemblyQualifiedName;
+
+                    fileRefType = Type.GetType(String.Join(",", fileRefDetails[1].Split(',').Take(2)), true)
+                        .AssemblyQualifiedName;
                     if (fileRefDetails.Length > 2)
                     {
                         fileRefTextEncoding = fileRefDetails[2];
@@ -210,12 +209,10 @@ namespace Resx.Resources
                 {
                     result = nodeInfo.Comment;
                 }
+
                 return (result == null ? "" : result);
             }
-            set
-            {
-                comment = value;
-            }
+            set { comment = value; }
         }
 
         public string Name
@@ -227,11 +224,13 @@ namespace Resx.Resources
                 {
                     result = nodeInfo.Name;
                 }
+
                 return result;
             }
             [
-                SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters") // "Name" is the name of the property.
-                                                                                                            // So we don't have to localize it.
+                SuppressMessage("Microsoft.Globalization",
+                    "CA1303:DoNotPassLiteralsAsLocalizedParameters") // "Name" is the name of the property.
+                // So we don't have to localize it.
             ]
             set
             {
@@ -239,10 +238,12 @@ namespace Resx.Resources
                 {
                     throw (new ArgumentNullException("Name"));
                 }
+
                 if (value.Length == 0)
                 {
                     throw (new ArgumentException("Name"));
                 }
+
                 name = value;
             }
         }
@@ -255,6 +256,7 @@ namespace Resx.Resources
                 {
                     return null;
                 }
+
                 if (fileRef == null)
                 {
                     if (String.IsNullOrEmpty(fileRefTextEncoding))
@@ -263,9 +265,11 @@ namespace Resx.Resources
                     }
                     else
                     {
-                        fileRef = new ResXFileRef(FileRefFullPath, FileRefType, Encoding.GetEncoding(FileRefTextEncoding));
+                        fileRef = new ResXFileRef(FileRefFullPath, FileRefType,
+                            Encoding.GetEncoding(FileRefTextEncoding));
                     }
                 }
+
                 return fileRef;
             }
         }
@@ -279,6 +283,7 @@ namespace Resx.Resources
                 {
                     result = fileRefFullPath;
                 }
+
                 return result;
             }
         }
@@ -292,6 +297,7 @@ namespace Resx.Resources
                 {
                     result = fileRefType;
                 }
+
                 return result;
             }
         }
@@ -300,7 +306,9 @@ namespace Resx.Resources
         {
             get
             {
-                string result = (fileRef == null ? null : (fileRef.TextFileEncoding == null ? null : fileRef.TextFileEncoding.BodyName));
+                string result = (fileRef == null
+                    ? null
+                    : (fileRef.TextFileEncoding == null ? null : fileRef.TextFileEncoding.BodyName));
                 if (result == null)
                 {
                     result = fileRefTextEncoding;
@@ -318,7 +326,9 @@ namespace Resx.Resources
             string raw = Convert.ToBase64String(data);
             if (raw.Length > lineWrap)
             {
-                StringBuilder output = new StringBuilder(raw.Length + (raw.Length / lineWrap) * 3); // word wrap on lineWrap chars, \r\n
+                StringBuilder
+                    output = new StringBuilder(raw.Length +
+                                               (raw.Length / lineWrap) * 3); // word wrap on lineWrap chars, \r\n
                 int current = 0;
                 for (; current < raw.Length - lineWrap; current += lineWrap)
                 {
@@ -326,6 +336,7 @@ namespace Resx.Resources
                     output.Append(prefix);
                     output.Append(raw, current, lineWrap);
                 }
+
                 output.Append(crlf);
                 output.Append(prefix);
                 output.Append(raw, current, raw.Length - current);
@@ -342,21 +353,24 @@ namespace Resx.Resources
         {
             CultureInfo ci = value as CultureInfo;
             if (ci != null)
-            { // special-case CultureInfo, cannot use CultureInfoConverter for serialization
+            {
+                // special-case CultureInfo, cannot use CultureInfoConverter for serialization
                 nodeInfo.ValueData = ci.Name;
-                nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(CultureInfo), this.typeNameConverter);
+                nodeInfo.TypeName =
+                    MultitargetUtil.GetAssemblyQualifiedName(typeof(CultureInfo), this.typeNameConverter);
             }
             else if (value is string)
             {
-                nodeInfo.ValueData = (string)value;
+                nodeInfo.ValueData = (string) value;
                 if (value == null)
                 {
-                    nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter);
+                    nodeInfo.TypeName =
+                        MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter);
                 }
             }
             else if (value is byte[])
             {
-                nodeInfo.ValueData = ToBase64WrappedString((byte[])value);
+                nodeInfo.ValueData = ToBase64WrappedString((byte[]) value);
                 nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(byte[]), this.typeNameConverter);
             }
             else
@@ -364,8 +378,10 @@ namespace Resx.Resources
                 Type valueType = (value == null) ? typeof(object) : value.GetType();
                 if (value != null && !valueType.IsSerializable)
                 {
-                    throw new InvalidOperationException(string.Format(SR.NotSerializableType, name, valueType.FullName));
+                    throw new InvalidOperationException(string.Format(SR.NotSerializableType, name,
+                        valueType.FullName));
                 }
+
                 TypeConverter tc = TypeDescriptor.GetConverter(valueType);
                 bool toString = tc.CanConvertTo(typeof(string));
                 bool fromString = tc.CanConvertFrom(typeof(string));
@@ -394,7 +410,7 @@ namespace Resx.Resources
                 bool fromByteArray = tc.CanConvertFrom(typeof(byte[]));
                 if (toByteArray && fromByteArray)
                 {
-                    byte[] data = (byte[])tc.ConvertTo(value, typeof(byte[]));
+                    byte[] data = (byte[]) tc.ConvertTo(value, typeof(byte[]));
                     string text = ToBase64WrappedString(data);
                     nodeInfo.ValueData = text;
                     nodeInfo.MimeType = ResXResourceWriter.ByteArraySerializedObjectMimeType;
@@ -405,7 +421,8 @@ namespace Resx.Resources
                 if (value == null)
                 {
                     nodeInfo.ValueData = string.Empty;
-                    nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter);
+                    nodeInfo.TypeName =
+                        MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter);
                 }
                 else
                 {
@@ -422,7 +439,6 @@ namespace Resx.Resources
                     nodeInfo.MimeType = ResXResourceWriter.DefaultSerializedObjectMimeType;
                 }
             }
-
         }
 
         private object GenerateObjectFromDataNodeInfo(DataNodeInfo dataNodeInfo, ITypeResolutionService typeResolver)
@@ -430,7 +446,9 @@ namespace Resx.Resources
             object result = null;
             string mimeTypeName = dataNodeInfo.MimeType;
             // default behavior: if we dont have a type name, it's a string
-            string typeName = (dataNodeInfo.TypeName == null || dataNodeInfo.TypeName.Length == 0 ? MultitargetUtil.GetAssemblyQualifiedName(typeof(string), this.typeNameConverter) : dataNodeInfo.TypeName);
+            string typeName = (dataNodeInfo.TypeName == null || dataNodeInfo.TypeName.Length == 0
+                ? MultitargetUtil.GetAssemblyQualifiedName(typeof(string), this.typeNameConverter)
+                : dataNodeInfo.TypeName);
 
             if (mimeTypeName != null && mimeTypeName.Length > 0)
             {
@@ -447,6 +465,7 @@ namespace Resx.Resources
                         binaryFormatter = new BinaryFormatter();
                         binaryFormatter.Binder = new ResXSerializationBinder(typeResolver);
                     }
+
                     IFormatter formatter = binaryFormatter;
                     if (serializedData != null && serializedData.Length > 0)
                     {
@@ -460,7 +479,7 @@ namespace Resx.Resources
 
                 else if (String.Equals(mimeTypeName, ResXResourceWriter.ByteArraySerializedObjectMimeType))
                 {
-                    if (typeName != null && typeName.Length > 0)
+                    if (!string.IsNullOrEmpty(typeName))
                     {
                         Type type = ResolveType(typeName, typeResolver);
                         if (type != null)
@@ -492,8 +511,10 @@ namespace Resx.Resources
                         }
                         else
                         {
-                            string newMessage = string.Format(SR.TypeLoadException, typeName, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
-                            XmlException xml = new XmlException(newMessage, null, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
+                            string newMessage = string.Format(SR.TypeLoadException, typeName,
+                                dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
+                            XmlException xml = new XmlException(newMessage, null, dataNodeInfo.ReaderPosition.Y,
+                                dataNodeInfo.ReaderPosition.X);
                             TypeLoadException newTle = new TypeLoadException(newMessage, xml);
 
                             throw newTle;
@@ -529,8 +550,10 @@ namespace Resx.Resources
                             }
                             catch (NotSupportedException nse)
                             {
-                                string newMessage = string.Format(SR.NotSupported, typeName, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X, nse.Message);
-                                XmlException xml = new XmlException(newMessage, nse, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
+                                string newMessage = string.Format(SR.NotSupported, typeName,
+                                    dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X, nse.Message);
+                                XmlException xml = new XmlException(newMessage, nse, dataNodeInfo.ReaderPosition.Y,
+                                    dataNodeInfo.ReaderPosition.X);
                                 NotSupportedException newNse = new NotSupportedException(newMessage, xml);
                                 throw newNse;
                             }
@@ -543,8 +566,10 @@ namespace Resx.Resources
                 }
                 else
                 {
-                    string newMessage = string.Format(SR.TypeLoadException, typeName, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
-                    XmlException xml = new XmlException(newMessage, null, dataNodeInfo.ReaderPosition.Y, dataNodeInfo.ReaderPosition.X);
+                    string newMessage = string.Format(SR.TypeLoadException, typeName, dataNodeInfo.ReaderPosition.Y,
+                        dataNodeInfo.ReaderPosition.X);
+                    XmlException xml = new XmlException(newMessage, null, dataNodeInfo.ReaderPosition.Y,
+                        dataNodeInfo.ReaderPosition.X);
                     TypeLoadException newTle = new TypeLoadException(newMessage, xml);
 
                     throw newTle;
@@ -555,6 +580,7 @@ namespace Resx.Resources
                 // if mimeTypeName and typeName are not filled in, the value must be a string
                 Debug.Assert(value is string, "Resource entries with no Type or MimeType must be encoded as strings");
             }
+
             return result;
         }
 
@@ -569,6 +595,7 @@ namespace Resx.Resources
             {
                 nodeInfo = new DataNodeInfo();
             }
+
             nodeInfo.Name = Name;
             nodeInfo.Comment = Comment;
 
@@ -582,15 +609,16 @@ namespace Resx.Resources
                 {
                     nodeInfo.ValueData = FileRef.ToString();
                     nodeInfo.MimeType = null;
-                    nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXFileRef), this.typeNameConverter);
+                    nodeInfo.TypeName =
+                        MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXFileRef), this.typeNameConverter);
                 }
                 else
                 {
                     // serialize to string inside the nodeInfo
                     FillDataNodeInfoFromObject(nodeInfo, value);
                 }
-
             }
+
             return nodeInfo;
         }
 
@@ -619,7 +647,8 @@ namespace Resx.Resources
             // the type name here is always a FQN
             if (typeName != null && typeName.Length > 0)
             {
-                if (typeName.Equals(MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter)))
+                if (typeName.Equals(
+                    MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter)))
                 {
                     return MultitargetUtil.GetAssemblyQualifiedName(typeof(object), this.typeNameConverter);
                 }
@@ -628,6 +657,7 @@ namespace Resx.Resources
                     return typeName;
                 }
             }
+
             string result = FileRefType;
             Type objectType = null;
             // do we have a fileref?
@@ -638,7 +668,6 @@ namespace Resx.Resources
             }
             else if (nodeInfo != null)
             {
-
                 // we dont have a fileref, try to resolve the type of the datanode
                 result = nodeInfo.TypeName;
                 // if typename is null, the default is just a string
@@ -655,12 +684,14 @@ namespace Resx.Resources
                             insideObject = GenerateObjectFromDataNodeInfo(nodeInfo, typeResolver);
                         }
                         catch (Exception ex)
-                        { // it'd be better to catch SerializationException but the underlying type resolver
-                          // can throw things like FileNotFoundException which is kinda confusing, so I am catching all here..
+                        {
+                            // it'd be better to catch SerializationException but the underlying type resolver
+                            // can throw things like FileNotFoundException which is kinda confusing, so I am catching all here..
                             if (ClientUtils.IsCriticalException(ex))
                             {
                                 throw;
                             }
+
                             // something went wrong, type is not specified at all or stream is corrupted
                             // return system.object
                             result = MultitargetUtil.GetAssemblyQualifiedName(typeof(object), this.typeNameConverter);
@@ -668,7 +699,8 @@ namespace Resx.Resources
 
                         if (insideObject != null)
                         {
-                            result = MultitargetUtil.GetAssemblyQualifiedName(insideObject.GetType(), this.typeNameConverter);
+                            result = MultitargetUtil.GetAssemblyQualifiedName(insideObject.GetType(),
+                                this.typeNameConverter);
                         }
                     }
                     else
@@ -682,6 +714,7 @@ namespace Resx.Resources
                     objectType = ResolveType(nodeInfo.TypeName, typeResolver);
                 }
             }
+
             if (objectType != null)
             {
                 if (objectType == typeof(ResXNullRef))
@@ -693,6 +726,7 @@ namespace Resx.Resources
                     result = MultitargetUtil.GetAssemblyQualifiedName(objectType, this.typeNameConverter);
                 }
             }
+
             return result;
         }
 
@@ -709,7 +743,6 @@ namespace Resx.Resources
         /// </summary>
         public object GetValue(ITypeResolutionService typeResolver)
         {
-
             if (value != null)
             {
                 return value;
@@ -724,12 +757,14 @@ namespace Resx.Resources
                     // we have the FQN for this type
                     if (FileRefTextEncoding != null)
                     {
-                        fileRef = new ResXFileRef(FileRefFullPath, objectType.AssemblyQualifiedName, Encoding.GetEncoding(FileRefTextEncoding));
+                        fileRef = new ResXFileRef(FileRefFullPath, objectType.AssemblyQualifiedName,
+                            Encoding.GetEncoding(FileRefTextEncoding));
                     }
                     else
                     {
                         fileRef = new ResXFileRef(FileRefFullPath, objectType.AssemblyQualifiedName);
                     }
+
                     TypeConverter tc = TypeDescriptor.GetConverter(typeof(ResXFileRef));
                     result = tc.ConvertFrom(fileRef.ToString());
                 }
@@ -752,6 +787,7 @@ namespace Resx.Resources
                 // we need to return null here
                 return null;
             }
+
             return result;
         }
 
@@ -781,6 +817,7 @@ namespace Resx.Resources
                             break;
                     }
                 }
+
                 return Convert.FromBase64String(sb.ToString());
             }
             else
@@ -802,8 +839,7 @@ namespace Resx.Resources
                 t = typeResolver.GetType(typeName, false);
                 if (t == null)
                 {
-
-                    string[] typeParts = typeName.Split(new char[] { ',' });
+                    string[] typeParts = typeName.Split(new char[] {','});
 
                     // Break up the type name from the rest of the assembly strong name.
                     //
@@ -856,11 +892,11 @@ namespace Resx.Resources
         private ResXDataNode(SerializationInfo info, StreamingContext context)
         {
             DataNodeInfo nodeInfo = new DataNodeInfo();
-            nodeInfo.Name = (string)info.GetValue("Name", typeof(string));
-            nodeInfo.Comment = (string)info.GetValue("Comment", typeof(string));
-            nodeInfo.TypeName = (string)info.GetValue("TypeName", typeof(string));
-            nodeInfo.MimeType = (string)info.GetValue("MimeType", typeof(string));
-            nodeInfo.ValueData = (string)info.GetValue("ValueData", typeof(string));
+            nodeInfo.Name = (string) info.GetValue("Name", typeof(string));
+            nodeInfo.Comment = (string) info.GetValue("Comment", typeof(string));
+            nodeInfo.TypeName = (string) info.GetValue("TypeName", typeof(string));
+            nodeInfo.MimeType = (string) info.GetValue("MimeType", typeof(string));
+            nodeInfo.ValueData = (string) info.GetValue("ValueData", typeof(string));
             this.nodeInfo = nodeInfo;
             InitializeDataNode(null);
         }
@@ -919,11 +955,11 @@ namespace Resx.Resources
             Type t = typeResolver.GetType(typeName);
             if (t == null)
             {
-                string[] typeParts = typeName.Split(new char[] { ',' });
+                string[] typeParts = typeName.Split(',');
 
                 // Break up the assembly name from the rest of the assembly strong name.
                 // we try 1) FQN 2) FQN without a version 3) just the short name
-                if (typeParts != null && typeParts.Length > 2)
+                if (typeParts.Length > 2)
                 {
                     string partialName = typeParts[0].Trim();
 
@@ -935,6 +971,7 @@ namespace Resx.Resources
                             partialName = partialName + ", " + s;
                         }
                     }
+
                     t = typeResolver.GetType(partialName);
                     if (t == null)
                     {
@@ -967,7 +1004,8 @@ namespace Resx.Resources
             typeName = null;
             if (typeNameConverter != null)
             {
-                string assemblyQualifiedTypeName = MultitargetUtil.GetAssemblyQualifiedName(serializedType, typeNameConverter);
+                string assemblyQualifiedTypeName =
+                    MultitargetUtil.GetAssemblyQualifiedName(serializedType, typeNameConverter);
                 if (!string.IsNullOrEmpty(assemblyQualifiedTypeName))
                 {
                     int pos = assemblyQualifiedTypeName.IndexOf(',');
@@ -979,6 +1017,7 @@ namespace Resx.Resources
                         {
                             typeName = newTypeName;
                         }
+
                         return;
                     }
                 }
@@ -995,7 +1034,8 @@ namespace Resx.Resources
         private Hashtable cachedAssemblies;
         private Hashtable cachedTypes;
 
-        private static string NetFrameworkPath = Path.Combine(Environment.GetEnvironmentVariable("SystemRoot"), "Microsoft.Net\\Framework");
+        private static string NetFrameworkPath =
+            Path.Combine(Environment.GetEnvironmentVariable("SystemRoot"), "Microsoft.Net\\Framework");
 
         internal AssemblyNamesTypeResolutionService(AssemblyName[] names)
         {
@@ -1015,7 +1055,6 @@ namespace Resx.Resources
         [ResourceConsumption(ResourceScope.Machine)]
         public Assembly GetAssembly(AssemblyName name, bool throwOnError)
         {
-
             Assembly result = null;
 
             if (cachedAssemblies == null)
@@ -1136,7 +1175,8 @@ namespace Resx.Resources
                         List<AssemblyName> assemblyList = new List<AssemblyName>(names.Length);
                         for (int i = 0; i < names.Length; i++)
                         {
-                            if (string.Compare(assemblyName.Name, names[i].Name, StringComparison.OrdinalIgnoreCase) == 0)
+                            if (string.Compare(assemblyName.Name, names[i].Name, StringComparison.OrdinalIgnoreCase) ==
+                                0)
                             {
                                 assemblyList.Insert(0, names[i]);
                             }
@@ -1145,6 +1185,7 @@ namespace Resx.Resources
                                 assemblyList.Add(names[i]);
                             }
                         }
+
                         names = assemblyList.ToArray();
                     }
                 }
@@ -1195,13 +1236,13 @@ namespace Resx.Resources
         /// </summary>
         private bool IsNetFrameworkAssembly(string assemblyPath)
         {
-            return assemblyPath != null && assemblyPath.StartsWith(NetFrameworkPath, StringComparison.OrdinalIgnoreCase);
+            return assemblyPath != null &&
+                   assemblyPath.StartsWith(NetFrameworkPath, StringComparison.OrdinalIgnoreCase);
         }
 
         public void ReferenceAssembly(AssemblyName name)
         {
             throw new NotSupportedException();
         }
-
     }
 }
