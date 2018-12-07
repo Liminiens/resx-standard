@@ -293,7 +293,7 @@ namespace Resx.Resources
                     }
 
                     if (contentReader == null)
-                        throw new InvalidOperationException("Contentent reader is null");
+                        throw new InvalidOperationException("Content reader is null");
 
                     SetupNameTable(contentReader);
                     contentReader.WhitespaceHandling = WhitespaceHandling.None;
@@ -416,8 +416,11 @@ namespace Resx.Resources
                 catch (SerializationException se)
                 {
                     Point pt = GetPosition(reader);
-                    string newMessage = string.Format(SR.SerializationException, reader[ResXResourceWriter.TypeStr],
-                        pt.Y, pt.X, se.Message);
+                    string newMessage = string.Format(
+                        SR.SerializationException,
+                        reader[ResXResourceWriter.TypeStr],
+                        pt.Y, pt.X,
+                        se.Message);
                     XmlException xml = new XmlException(newMessage, se, pt.Y, pt.X);
                     SerializationException newSe = new SerializationException(newMessage, xml);
 
@@ -426,8 +429,11 @@ namespace Resx.Resources
                 catch (TargetInvocationException tie)
                 {
                     Point pt = GetPosition(reader);
-                    string newMessage = string.Format(SR.InvocationException, reader[ResXResourceWriter.TypeStr], pt.Y,
-                        pt.X, tie.InnerException.Message);
+                    string newMessage = string.Format(
+                        SR.InvocationException,
+                        reader[ResXResourceWriter.TypeStr],
+                        pt.Y, pt.X,
+                        tie.InnerException.Message);
                     XmlException xml = new XmlException(newMessage, tie.InnerException, pt.Y, pt.X);
                     TargetInvocationException newTie = new TargetInvocationException(newMessage, xml);
 

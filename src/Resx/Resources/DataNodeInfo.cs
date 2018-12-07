@@ -13,13 +13,15 @@ namespace Resx.Resources
 
         public DataNodeInfo Clone()
         {
-            DataNodeInfo result = new DataNodeInfo();
-            result.Name = Name;
-            result.Comment = Comment;
-            result.TypeName = TypeName;
-            result.MimeType = MimeType;
-            result.ValueData = ValueData;
-            result.ReaderPosition = new Point(ReaderPosition.X, ReaderPosition.Y);
+            var result = new DataNodeInfo
+            {
+                Name = Name,
+                Comment = Comment,
+                TypeName = TypeName,
+                MimeType = MimeType,
+                ValueData = ValueData,
+                ReaderPosition = new Point(ReaderPosition.X, ReaderPosition.Y)
+            };
             return result;
         }
     }

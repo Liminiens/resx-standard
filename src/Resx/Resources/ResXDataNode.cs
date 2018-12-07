@@ -61,21 +61,22 @@ namespace Resx.Resources
         //</summary>
         internal ResXDataNode DeepClone()
         {
-            ResXDataNode result = new ResXDataNode();
-            result.nodeInfo =
-                (nodeInfo != null)
-                    ? nodeInfo.Clone()
-                    : null; // nodeinfo is just made up of immutable objects, we don't need to clone it
-            result.name = name;
-            result.comment = comment;
+            ResXDataNode result = new ResXDataNode
+            {
+                // nodeinfo is just made up of immutable objects, we don't need to clone it
+                nodeInfo = nodeInfo?.Clone(),
+                name = name,
+                comment = comment,
+                typeName = typeName,
+                fileRefFullPath = fileRefFullPath,
+                fileRefType = fileRefType,
+                fileRefTextEncoding = fileRefTextEncoding,
+                value = value,
+                fileRef = fileRef?.Clone(),
+                typeNameConverter = typeNameConverter
+            };
 
-            result.typeName = typeName;
-            result.fileRefFullPath = fileRefFullPath;
-            result.fileRefType = fileRefType;
-            result.fileRefTextEncoding = fileRefTextEncoding;
-            result.value = value; // we don't clone the value, because we don't know how
-            result.fileRef = (fileRef != null) ? fileRef.Clone() : null;
-            result.typeNameConverter = typeNameConverter;
+            // we don't clone the value, because we don't know how
             return result;
         }
 
@@ -83,8 +84,7 @@ namespace Resx.Resources
         [SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
         [
             SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters")
-            // "name" is the name of the param passed in.
-            // // So we don't have to localize it.
+            // "name" is the name of the param passed in. So we don't have to localize it.
         ]
         public ResXDataNode(string name, object value, Func<Type, string> typeNameConverter)
         {
@@ -178,7 +178,7 @@ namespace Resx.Resources
             if (nodeType != null && nodeType == typeof(ResXFileRef))
             {
                 // we have a fileref, split the value data and populate the fields
-                string[] fileRefDetails = ResXFileRef.Converter.ParseResxFileRefString(nodeInfo.ValueData);
+                string[] fileRefDetails = ResxFileRefStringConverter.ParseResxFileRefString(nodeInfo.ValueData);
                 if (fileRefDetails != null && fileRefDetails.Length > 1)
                 {
                     if (!Path.IsPathRooted(fileRefDetails[0]) && basePath != null)
@@ -190,7 +190,7 @@ namespace Resx.Resources
                         fileRefFullPath = fileRefDetails[0];
                     }
 
-                    fileRefType = Type.GetType(String.Join(",", fileRefDetails[1].Split(',').Take(2)), true)
+                    fileRefType = Type.GetType(string.Join(",", fileRefDetails[1].Split(',').Take(2)), true)
                         .AssemblyQualifiedName;
                     if (fileRefDetails.Length > 2)
                     {
@@ -210,7 +210,7 @@ namespace Resx.Resources
                     result = nodeInfo.Comment;
                 }
 
-                return (result == null ? "" : result);
+                return result ?? "";
             }
             set { comment = value; }
         }
@@ -236,12 +236,12 @@ namespace Resx.Resources
             {
                 if (value == null)
                 {
-                    throw (new ArgumentNullException("Name"));
+                    throw new ArgumentNullException(nameof(Name));
                 }
 
                 if (value.Length == 0)
                 {
-                    throw (new ArgumentException("Name"));
+                    throw new ArgumentException(nameof(Name));
                 }
 
                 name = value;
@@ -259,7 +259,7 @@ namespace Resx.Resources
 
                 if (fileRef == null)
                 {
-                    if (String.IsNullOrEmpty(fileRefTextEncoding))
+                    if (string.IsNullOrEmpty(fileRefTextEncoding))
                     {
                         fileRef = new ResXFileRef(FileRefFullPath, FileRefType);
                     }
@@ -278,7 +278,7 @@ namespace Resx.Resources
         {
             get
             {
-                string result = (fileRef == null ? null : fileRef.FileName);
+                string result = fileRef?.FileName;
                 if (result == null)
                 {
                     result = fileRefFullPath;
@@ -292,7 +292,7 @@ namespace Resx.Resources
         {
             get
             {
-                string result = (fileRef == null ? null : fileRef.TypeName);
+                string result = fileRef?.TypeName;
                 if (result == null)
                 {
                     result = fileRefType;
@@ -306,9 +306,7 @@ namespace Resx.Resources
         {
             get
             {
-                string result = (fileRef == null
-                    ? null
-                    : (fileRef.TextFileEncoding == null ? null : fileRef.TextFileEncoding.BodyName));
+                string result = fileRef?.TextFileEncoding?.BodyName;
                 if (result == null)
                 {
                     result = fileRefTextEncoding;
@@ -326,9 +324,8 @@ namespace Resx.Resources
             string raw = Convert.ToBase64String(data);
             if (raw.Length > lineWrap)
             {
-                StringBuilder
-                    output = new StringBuilder(raw.Length +
-                                               (raw.Length / lineWrap) * 3); // word wrap on lineWrap chars, \r\n
+                // word wrap on lineWrap chars, \r\n
+                StringBuilder output = new StringBuilder(raw.Length + (raw.Length / lineWrap) * 3);
                 int current = 0;
                 for (; current < raw.Length - lineWrap; current += lineWrap)
                 {
@@ -351,26 +348,20 @@ namespace Resx.Resources
 
         private void FillDataNodeInfoFromObject(DataNodeInfo nodeInfo, object value)
         {
-            CultureInfo ci = value as CultureInfo;
-            if (ci != null)
+            if (value is CultureInfo ci)
             {
                 // special-case CultureInfo, cannot use CultureInfoConverter for serialization
                 nodeInfo.ValueData = ci.Name;
                 nodeInfo.TypeName =
                     MultitargetUtil.GetAssemblyQualifiedName(typeof(CultureInfo), typeNameConverter);
             }
-            else if (value is string)
+            else if (value is string str)
             {
-                nodeInfo.ValueData = (string) value;
-                if (value == null)
-                {
-                    nodeInfo.TypeName =
-                        MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), typeNameConverter);
-                }
+                nodeInfo.ValueData = str;
             }
-            else if (value is byte[])
+            else if (value is byte[] bytes)
             {
-                nodeInfo.ValueData = ToBase64WrappedString((byte[]) value);
+                nodeInfo.ValueData = ToBase64WrappedString(bytes);
                 nodeInfo.TypeName = MultitargetUtil.GetAssemblyQualifiedName(typeof(byte[]), typeNameConverter);
             }
             else
@@ -446,15 +437,16 @@ namespace Resx.Resources
             object result = null;
             string mimeTypeName = dataNodeInfo.MimeType;
             // default behavior: if we dont have a type name, it's a string
-            string typeName = (dataNodeInfo.TypeName == null || dataNodeInfo.TypeName.Length == 0
-                ? MultitargetUtil.GetAssemblyQualifiedName(typeof(string), typeNameConverter)
-                : dataNodeInfo.TypeName);
+            string typeName =
+                string.IsNullOrEmpty(dataNodeInfo.TypeName)
+                    ? MultitargetUtil.GetAssemblyQualifiedName(typeof(string), typeNameConverter)
+                    : dataNodeInfo.TypeName;
 
-            if (mimeTypeName != null && mimeTypeName.Length > 0)
+            if (!string.IsNullOrEmpty(mimeTypeName))
             {
-                if (String.Equals(mimeTypeName, ResXResourceWriter.BinSerializedObjectMimeType)
-                    || String.Equals(mimeTypeName, ResXResourceWriter.Beta2CompatSerializedObjectMimeType)
-                    || String.Equals(mimeTypeName, ResXResourceWriter.CompatBinSerializedObjectMimeType))
+                if (string.Equals(mimeTypeName, ResXResourceWriter.BinSerializedObjectMimeType)
+                    || string.Equals(mimeTypeName, ResXResourceWriter.Beta2CompatSerializedObjectMimeType)
+                    || string.Equals(mimeTypeName, ResXResourceWriter.CompatBinSerializedObjectMimeType))
                 {
                     string text = dataNodeInfo.ValueData;
                     byte[] serializedData;
@@ -477,7 +469,7 @@ namespace Resx.Resources
                     }
                 }
 
-                else if (String.Equals(mimeTypeName, ResXResourceWriter.ByteArraySerializedObjectMimeType))
+                else if (string.Equals(mimeTypeName, ResXResourceWriter.ByteArraySerializedObjectMimeType))
                 {
                     if (!string.IsNullOrEmpty(typeName))
                     {
@@ -485,27 +477,21 @@ namespace Resx.Resources
                         if (type != null)
                         {
                             TypeConverter tc = TypeDescriptor.GetConverter(type);
+                            string text = dataNodeInfo.ValueData;
+                            byte[] serializedData = FromBase64WrappedString(text);
                             if (tc.CanConvertFrom(typeof(byte[])))
                             {
-                                string text = dataNodeInfo.ValueData;
-                                byte[] serializedData = FromBase64WrappedString(text);
-
                                 if (serializedData != null)
                                 {
                                     result = tc.ConvertFrom(serializedData);
                                 }
                             }
-                            else
+                            else if (serializedData != null)
                             {
-                                string text = dataNodeInfo.ValueData;
-                                byte[] serializedData = FromBase64WrappedString(text);
-                                if (serializedData != null)
+                                var bitmap = BitmapUtility.CreateFromArray(serializedData);
+                                if (bitmap != null)
                                 {
-                                    var bitmap = BitmapUtility.CreateFromArray(serializedData);
-                                    if (bitmap != null)
-                                    {
-                                        result = bitmap;
-                                    }
+                                    result = bitmap;
                                 }
                             }
                         }
@@ -522,7 +508,7 @@ namespace Resx.Resources
                     }
                 }
             }
-            else if (typeName != null && typeName.Length > 0)
+            else if (!string.IsNullOrEmpty(typeName))
             {
                 Type type = ResolveType(typeName, typeResolver);
                 if (type != null)
@@ -560,7 +546,8 @@ namespace Resx.Resources
                         }
                         else
                         {
-                            Debug.WriteLine("Converter for " + type.FullName + " doesn't support string conversion");
+                            Debug.WriteLine("ResxFileRefStringConverter for " + type.FullName +
+                                            " doesn't support string conversion");
                         }
                     }
                 }
@@ -828,6 +815,11 @@ namespace Resx.Resources
 
         private Type ResolveType(string typeName, ITypeResolutionService typeResolver)
         {
+            if (typeName.Contains("System.Drawing.Bitmap"))
+            {
+                return typeof(Bitmap);
+            }
+
             Type t = null;
             if (typeResolver != null)
             {
@@ -839,11 +831,11 @@ namespace Resx.Resources
                 t = typeResolver.GetType(typeName, false);
                 if (t == null)
                 {
-                    string[] typeParts = typeName.Split(new char[] {','});
+                    string[] typeParts = typeName.Split(',');
 
                     // Break up the type name from the rest of the assembly strong name.
                     //
-                    if (typeParts != null && typeParts.Length >= 2)
+                    if (typeParts.Length >= 2)
                     {
                         string partialName = typeParts[0].Trim();
                         string assemblyName = typeParts[1].Trim();
@@ -859,14 +851,10 @@ namespace Resx.Resources
 
                 if (t == null)
                 {
-                    var testTypeName = String.Join(",", typeName.Split(',').Take(2));
+                    var testTypeName = string.Join(",", typeName.Split(',').Take(2));
                     if (testTypeName.Length > 0)
                     {
                         t = Type.GetType(testTypeName, false);
-                        if (t == null && testTypeName.Contains("System.Drawing.Bitmap"))
-                        {
-                            t = typeof(Bitmap);
-                        }
                     }
                 }
             }
@@ -876,7 +864,7 @@ namespace Resx.Resources
 
         /// <summary>
         ///    Get the value contained in this datanode
-        /// </summary>        
+        /// </summary>
         // NOTE: No LinkDemand for SerializationFormatter necessary here, since this class already
         // has a FullTrust LinkDemand.
         void ISerializable.GetObjectData(SerializationInfo si, StreamingContext context)

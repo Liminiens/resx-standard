@@ -19,7 +19,7 @@ namespace Resx.Tests
 
                 var file = reader
                     .Cast<DictionaryEntry>()
-                    .Select(x => (ResXDataNode)x.Value)
+                    .Select(x => (ResXDataNode) x.Value)
                     .First(x => x.FileRef.FileName == "Resources\\cello82.wav");
 
                 var type = typeof(MemoryStream);
@@ -36,13 +36,15 @@ namespace Resx.Tests
 
                 var photo = reader
                     .Cast<DictionaryEntry>()
-                    .Select(x => (ResXDataNode)x.Value)
+                    .Select(x => (ResXDataNode) x.Value)
                     .First(x => x.Name == "Flowers");
 
-                var value = (Bitmap)photo.GetValue((ITypeResolutionService)null);
+                var value = (Bitmap) photo.GetValue((ITypeResolutionService) null);
+                var typeName = photo.GetValueTypeName((ITypeResolutionService) null);
 
                 Assert.NotNull(value);
                 Assert.False(value.Size.IsEmpty);
+                Assert.Equal(typeof(Bitmap).AssemblyQualifiedName, typeName);
             }
         }
 
@@ -55,13 +57,16 @@ namespace Resx.Tests
 
                 var other = reader
                     .Cast<DictionaryEntry>()
-                    .Select(x => (ResXDataNode)x.Value)
+                    .Select(x => (ResXDataNode) x.Value)
                     .First(x => x.FileRef.FileName == "Resources\\cello82.mp3");
 
-                var value = (byte[])other.GetValue((ITypeResolutionService)null);
+                var value = (byte[]) other.GetValue((ITypeResolutionService) null);
+                var typeName = other.GetValueTypeName((ITypeResolutionService) null);
 
                 Assert.NotNull(value);
+                Assert.Equal(@"Resources\cello82.mp3", other.FileRef.FileName);
                 Assert.True(value.Length > 0);
+                Assert.Equal(typeof(byte[]).AssemblyQualifiedName, typeName);
             }
         }
 
@@ -74,13 +79,17 @@ namespace Resx.Tests
 
                 var file = reader
                     .Cast<DictionaryEntry>()
-                    .Select(x => (ResXDataNode)x.Value)
+                    .Select(x => (ResXDataNode) x.Value)
                     .First(x => x.FileRef.FileName == "Resources\\Package.ico");
 
-                var value = (byte[])file.GetValue((ITypeResolutionService)null);
+                var value = (byte[]) file.GetValue((ITypeResolutionService) null);
+                var typeName = file.GetValueTypeName((ITypeResolutionService) null);
+
 
                 Assert.NotNull(value);
+                Assert.Equal(@"Resources\Package.ico", file.FileRef.FileName);
                 Assert.True(value.Length > 0);
+                Assert.Equal(typeof(byte[]).AssemblyQualifiedName, typeName);
             }
         }
 
@@ -93,10 +102,10 @@ namespace Resx.Tests
 
                 var str = reader
                     .Cast<DictionaryEntry>()
-                    .Select(x => (ResXDataNode)x.Value)
+                    .Select(x => (ResXDataNode) x.Value)
                     .First(x => x.Name == "Example");
 
-                var value = (string)str.GetValue((ITypeResolutionService)null);
+                var value = (string) str.GetValue((ITypeResolutionService) null);
 
                 Assert.NotNull(value);
                 Assert.Equal("Something", value);

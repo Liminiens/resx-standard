@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
@@ -13,8 +14,12 @@ namespace Resx.Resources
     internal class AssemblyNamesTypeResolutionService : ITypeResolutionService
     {
         private AssemblyName[] names;
-        private Hashtable cachedAssemblies;
-        private Hashtable cachedTypes;
+
+        private readonly ConcurrentDictionary<AssemblyName, Assembly> cachedAssemblies =
+            new ConcurrentDictionary<AssemblyName, Assembly>();
+
+        private readonly ConcurrentDictionary<string, Type> cachedTypes =
+            new ConcurrentDictionary<string, Type>();
 
         internal AssemblyNamesTypeResolutionService(AssemblyName[] names)
         {
@@ -34,48 +39,40 @@ namespace Resx.Resources
         [ResourceConsumption(ResourceScope.Machine)]
         public Assembly GetAssembly(AssemblyName name, bool throwOnError)
         {
+            if (cachedAssemblies.TryGetValue(name, out var asm))
+            {
+                return asm;
+            }
+
             Assembly result = null;
 
-            if (cachedAssemblies == null)
-            {
-                cachedAssemblies = Hashtable.Synchronized(new Hashtable());
-            }
-
-            if (cachedAssemblies.Contains(name))
-            {
-                result = cachedAssemblies[name] as Assembly;
-            }
-
-            if (result == null)
-            {
-                // try to load it first from the gac
+            // try to load it first from the gac
 #pragma warning disable 0618
-                //Although LoadWithPartialName is obsolete, we still have to call it: changing 
-                //this would be breaking in cases where people edited their resource files by
-                //hand.
-                result = Assembly.LoadWithPartialName(name.FullName);
+            //Although LoadWithPartialName is obsolete, we still have to call it: changing 
+            //this would be breaking in cases where people edited their resource files by
+            //hand.
+            result = Assembly.LoadWithPartialName(name.FullName);
 #pragma warning restore 0618
-                if (result != null)
+            if (result != null)
+            {
+                cachedAssemblies[name] = result;
+            }
+            else if (names != null)
+            {
+                foreach (var asmName in names)
                 {
-                    cachedAssemblies[name] = result;
-                }
-                else if (names != null)
-                {
-                    for (int i = 0; i < names.Length; i++)
+                    if (name.Equals(asmName))
                     {
-                        if (name.Equals(names[i]))
+                        try
                         {
-                            try
+                            result = Assembly.LoadFrom(GetPathOfAssembly(name));
+                            cachedAssemblies[name] = result;
+                        }
+                        catch
+                        {
+                            if (throwOnError)
                             {
-                                result = Assembly.LoadFrom(GetPathOfAssembly(name));
-                                cachedAssemblies[name] = result;
-                            }
-                            catch
-                            {
-                                if (throwOnError)
-                                {
-                                    throw;
-                                }
+                                throw;
                             }
                         }
                     }
@@ -92,7 +89,6 @@ namespace Resx.Resources
             return name.CodeBase;
         }
 
-
         public Type GetType(string name)
         {
             return GetType(name, true);
@@ -105,19 +101,12 @@ namespace Resx.Resources
 
         public Type GetType(string name, bool throwOnError, bool ignoreCase)
         {
+            if (cachedTypes.TryGetValue(name, out var type))
+            {
+                return type;
+            }
+
             Type result = null;
-
-            // Check type cache first
-            if (cachedTypes == null)
-            {
-                cachedTypes = Hashtable.Synchronized(new Hashtable(StringComparer.Ordinal));
-            }
-
-            if (cachedTypes.Contains(name))
-            {
-                result = cachedTypes[name] as Type;
-                return result;
-            }
 
             // Missed in cache, try to resolve the type. First try to resolve in the GAC
             if (name.IndexOf(',') != -1)
@@ -196,7 +185,7 @@ namespace Resx.Resources
 
             if (result != null)
             {
-                cachedTypes[name] = result;
+                cachedTypes.TryAdd(name, result);
             }
 
             return result;
