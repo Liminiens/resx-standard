@@ -52,9 +52,6 @@ namespace Resx.Resources
         internal static readonly string CompatBinSerializedObjectMimeType =
             "text/microsoft-urt/binary-serialized/base64";
 
-        internal static readonly string CompatSoapSerializedObjectMimeType =
-            "text/microsoft-urt/soap-serialized/base64";
-
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
@@ -205,7 +202,6 @@ namespace Resx.Resources
         Stream stream;
         TextWriter textWriter;
         XmlTextWriter xmlTextWriter;
-        string basePath;
 
         bool hasBeenSaved;
         bool initialized;
@@ -215,11 +211,7 @@ namespace Resx.Resources
         /// <summary>
         ///     Base Path for ResXFileRefs.
         /// </summary>
-        public string BasePath
-        {
-            get { return basePath; }
-            set { basePath = value; }
-        }
+        public string BasePath { get; set; }
 
         /// <summary>
         ///     Creates a new ResXResourceWriter that will write to the specified file.
@@ -377,7 +369,7 @@ namespace Resx.Resources
         {
             if (assemblyName == null)
             {
-                throw new ArgumentNullException("assemblyName");
+                throw new ArgumentNullException(nameof(assemblyName));
             }
 
             if (cachedAliases == null)

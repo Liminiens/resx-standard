@@ -269,11 +269,10 @@ namespace Resx.Resources
             [ResourceConsumption(ResourceScope.Machine)]
             public override object ConvertFrom(ITypeDescriptorContext context,
                 CultureInfo culture,
-                Object value)
+                object value)
             {
-                Object created = null;
-                string stringValue = value as string;
-                if (stringValue != null)
+                object created = null;
+                if (value is string stringValue)
                 {
                     string[] parts = ParseResxFileRefString(stringValue);
                     string fileName = parts[0];
