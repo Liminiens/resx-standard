@@ -815,9 +815,9 @@ namespace Resx.Resources
 
         private Type ResolveType(string typeName, ITypeResolutionService typeResolver)
         {
-            if (typeName.Contains("System.Drawing.Bitmap"))
+            if (typeName.Contains(", System.Drawing"))
             {
-                return typeof(Bitmap);
+                typeName = typeName.Replace(", System.Drawing", ", System.Drawing.Common");
             }
 
             Type t = null;
