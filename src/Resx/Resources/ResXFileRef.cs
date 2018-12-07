@@ -94,8 +94,8 @@ namespace Resx.Resources
             for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
             {
                 if ((path1[i] != path2[i]) && (compareCase ||
-                                               (Char.ToLower(path1[i], CultureInfo.InvariantCulture) !=
-                                                Char.ToLower(path2[i], CultureInfo.InvariantCulture))))
+                                               (char.ToLower(path1[i], CultureInfo.InvariantCulture) !=
+                                                char.ToLower(path2[i], CultureInfo.InvariantCulture))))
                 {
                     break;
                 }
@@ -112,7 +112,7 @@ namespace Resx.Resources
 
             if ((i == path1.Length) && (i == path2.Length))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             StringBuilder relPath = new StringBuilder();
@@ -199,12 +199,12 @@ namespace Resx.Resources
             /// <summary>
             ///    <para>[To be supplied.]</para>
             /// </summary>
-            public override Object ConvertTo(ITypeDescriptorContext context,
+            public override object ConvertTo(ITypeDescriptorContext context,
                 CultureInfo culture,
-                Object value,
+                object value,
                 Type destinationType)
             {
-                Object created = null;
+                object created = null;
                 if (destinationType == typeof(string))
                 {
                     created = ((ResXFileRef) value).ToString();
@@ -267,16 +267,16 @@ namespace Resx.Resources
             /// </summary>
             [ResourceExposure(ResourceScope.Machine)]
             [ResourceConsumption(ResourceScope.Machine)]
-            public override object ConvertFrom(ITypeDescriptorContext context,
+            public override object ConvertFrom(
+                ITypeDescriptorContext context,
                 CultureInfo culture,
                 object value)
             {
-                object created = null;
                 if (value is string stringValue)
                 {
                     string[] parts = ParseResxFileRefString(stringValue);
                     string fileName = parts[0];
-                    string typeName = String.Join(",", parts[1].Split(',').Take(2));
+                    string typeName = string.Join(",", parts[1].Split(',').Take(2));
                     Type toCreate = Type.GetType(typeName, true);
 
                     // special case string and byte[]
@@ -291,51 +291,48 @@ namespace Resx.Resources
 
                         using (StreamReader sr = new StreamReader(fileName, textFileEncoding))
                         {
-                            created = sr.ReadToEnd();
+                            return sr.ReadToEnd();
                         }
                     }
-                    else
+
+                    // this is a regular file, we call it's constructor with a stream as a parameter
+                    // or if it's a byte array we just return that
+                    byte[] temp = null;
+
+                    using (FileStream s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-                        // this is a regular file, we call it's constructor with a stream as a parameter
-                        // or if it's a byte array we just return that
-                        byte[] temp = null;
-
-                        using (FileStream s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-                        {
-                            Debug.Assert(s != null, "Couldn't open " + fileName);
-                            temp = new byte[s.Length];
-                            s.Read(temp, 0, (int) s.Length);
-                        }
-
-                        if (toCreate == typeof(byte[]))
-                        {
-                            created = temp;
-                        }
-                        else
-                        {
-                            MemoryStream memStream = new MemoryStream(temp);
-                            if (toCreate == typeof(MemoryStream))
-                            {
-                                return memStream;
-                            }
-                            else if (toCreate == typeof(Bitmap) && fileName.EndsWith(".ico"))
-                            {
-                                // we special case the .ico bitmaps because GDI+ destroy the alpha channel component and
-                                // we don't want that to happen
-                                Icon ico = new Icon(memStream);
-                                created = ico.ToBitmap();
-                            }
-                            else
-                            {
-                                created = Activator.CreateInstance(toCreate,
-                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, null,
-                                    new Object[] {memStream}, null);
-                            }
-                        }
+                        Debug.Assert(s != null, "Couldn't open " + fileName);
+                        temp = new byte[s.Length];
+                        s.Read(temp, 0, (int) s.Length);
                     }
+
+                    if (toCreate == typeof(byte[]))
+                    {
+                        return temp;
+                    }
+
+                    MemoryStream memStream = new MemoryStream(temp);
+                    if (toCreate == typeof(MemoryStream))
+                    {
+                        return memStream;
+                    }
+
+                    if (toCreate == typeof(Bitmap) && fileName.EndsWith(".ico"))
+                    {
+                        // we special case the .ico bitmaps because GDI+ destroy the alpha channel component and
+                        // we don't want that to happen
+                        Icon ico = new Icon(memStream);
+                        return ico.ToBitmap();
+                    }
+
+                    return Activator.CreateInstance(
+                        toCreate,
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance,
+                        null,
+                        new object[] {memStream}, null);
                 }
 
-                return created;
+                return null;
             }
         }
     }

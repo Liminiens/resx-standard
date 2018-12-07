@@ -5,6 +5,10 @@ using Resx.Utility;
 
 namespace Resx.Resources
 {
+    // This class implements a partial type resolver for the BinaryFormatter.
+    // This is needed to be able to read binary serialized content from older
+    // NDP types and map them to newer versions.
+    //
     internal class ResXSerializationBinder : SerializationBinder
     {
         private ITypeResolutionService typeResolver;
