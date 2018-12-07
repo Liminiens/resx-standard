@@ -24,8 +24,7 @@ namespace Resx.Resources
     {
         private string fileName;
         private string typeName;
-        [OptionalField(VersionAdded = 2)]
-        private Encoding textFileEncoding;
+        [OptionalField(VersionAdded = 2)] private Encoding textFileEncoding;
 
         /// <summary>
         ///     Creates a new ResXFileRef that points to the specified file.
@@ -34,18 +33,9 @@ namespace Resx.Resources
         /// </summary>
         public ResXFileRef(string fileName, string typeName)
         {
-            if (fileName == null)
-            {
-                throw (new ArgumentNullException("fileName"));
-            }
-            if (typeName == null)
-            {
-                throw (new ArgumentNullException("typeName"));
-            }
-            this.fileName = fileName;
-            this.typeName = typeName;
+            this.fileName = fileName ?? throw (new ArgumentNullException(nameof(fileName)));
+            this.typeName = typeName ?? throw (new ArgumentNullException(nameof(typeName)));
         }
-
 
         [OnDeserializing]
         private void OnDeserializing(StreamingContext ctx)
@@ -64,7 +54,8 @@ namespace Resx.Resources
         ///     The type refered to by typeName must support a constructor
         ///     that accepts a System.IO.Stream as a parameter.
         /// </summary>
-        public ResXFileRef(string fileName, string typeName, Encoding textFileEncoding) : this(fileName, typeName)
+        public ResXFileRef(string fileName, string typeName, Encoding textFileEncoding)
+            : this(fileName, typeName)
         {
             this.textFileEncoding = textFileEncoding;
         }
@@ -77,39 +68,21 @@ namespace Resx.Resources
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public string FileName
-        {
-            get
-            {
-                return fileName;
-            }
-        }
+        public string FileName => fileName;
 
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public string TypeName
-        {
-            get
-            {
-                return typeName;
-            }
-        }
+        public string TypeName => typeName;
 
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public Encoding TextFileEncoding
-        {
-            get
-            {
-                return textFileEncoding;
-            }
-        }
+        public Encoding TextFileEncoding => textFileEncoding;
 
         /// <summary>
-        ///    path1+result = path2
-        ///   A string which is the relative path difference between path1 and
+        ///  path1+result = path2
+        ///  A string which is the relative path difference between path1 and
         ///  path2 such that if path1 and the calculated difference are used
         ///  as arguments to Combine(), path2 is returned
         /// </summary>
@@ -120,10 +93,11 @@ namespace Resx.Resources
 
             for (i = 0; (i < path1.Length) && (i < path2.Length); ++i)
             {
-                if ((path1[i] != path2[i]) && (compareCase || (Char.ToLower(path1[i], CultureInfo.InvariantCulture) != Char.ToLower(path2[i], CultureInfo.InvariantCulture))))
+                if ((path1[i] != path2[i]) && (compareCase ||
+                                               (Char.ToLower(path1[i], CultureInfo.InvariantCulture) !=
+                                                Char.ToLower(path2[i], CultureInfo.InvariantCulture))))
                 {
                     break;
-
                 }
                 else if (path1[i] == Path.DirectorySeparatorChar)
                 {
@@ -135,6 +109,7 @@ namespace Resx.Resources
             {
                 return path2;
             }
+
             if ((i == path1.Length) && (i == path2.Length))
             {
                 return String.Empty;
@@ -149,17 +124,17 @@ namespace Resx.Resources
                     relPath.Append(".." + Path.DirectorySeparatorChar);
                 }
             }
+
             return relPath.ToString() + path2.Substring(si + 1);
         }
 
-
         internal void MakeFilePathRelative(string basePath)
         {
-
-            if (basePath == null || basePath.Length == 0)
+            if (string.IsNullOrEmpty(basePath))
             {
                 return;
             }
+
             fileName = PathDifference(basePath, fileName, false);
         }
 
@@ -178,11 +153,13 @@ namespace Resx.Resources
             {
                 result += (fileName + ";");
             }
+
             result += typeName;
             if (textFileEncoding != null)
             {
                 result += (";" + textFileEncoding.WebName);
             }
+
             return result;
         }
 
@@ -201,6 +178,7 @@ namespace Resx.Resources
                 {
                     return true;
                 }
+
                 return false;
             }
 
@@ -214,6 +192,7 @@ namespace Resx.Resources
                 {
                     return true;
                 }
+
                 return false;
             }
 
@@ -228,8 +207,9 @@ namespace Resx.Resources
                 Object created = null;
                 if (destinationType == typeof(string))
                 {
-                    created = ((ResXFileRef)value).ToString();
+                    created = ((ResXFileRef) value).ToString();
                 }
+
                 return created;
             }
 
@@ -263,20 +243,22 @@ namespace Resx.Resources
                             throw new ArgumentException("value");
                         remainingString = stringValue.Substring(nextSemiColumn + 1);
                     }
-                    string[] parts = remainingString.Split(new char[] { ';' });
+
+                    string[] parts = remainingString.Split(';');
                     if (parts.Length > 1)
                     {
-                        result = new string[] { fileName, parts[0], parts[1] };
+                        result = new[] {fileName, parts[0], parts[1]};
                     }
                     else if (parts.Length > 0)
                     {
-                        result = new string[] { fileName, parts[0] };
+                        result = new[] {fileName, parts[0]};
                     }
                     else
                     {
-                        result = new string[] { fileName };
+                        result = new[] {fileName};
                     }
                 }
+
                 return result;
             }
 
@@ -285,7 +267,7 @@ namespace Resx.Resources
             /// </summary>
             [ResourceExposure(ResourceScope.Machine)]
             [ResourceConsumption(ResourceScope.Machine)]
-            public override Object ConvertFrom(ITypeDescriptorContext context,
+            public override object ConvertFrom(ITypeDescriptorContext context,
                 CultureInfo culture,
                 Object value)
             {
@@ -299,7 +281,7 @@ namespace Resx.Resources
                     Type toCreate = Type.GetType(typeName, true);
 
                     // special case string and byte[]
-                    if (toCreate.Equals(typeof(string)))
+                    if (toCreate == typeof(string))
                     {
                         // we have a string, now we need to check the encoding
                         Encoding textFileEncoding = Encoding.Default;
@@ -307,6 +289,7 @@ namespace Resx.Resources
                         {
                             textFileEncoding = Encoding.GetEncoding(parts[2]);
                         }
+
                         using (StreamReader sr = new StreamReader(fileName, textFileEncoding))
                         {
                             created = sr.ReadToEnd();
@@ -314,7 +297,6 @@ namespace Resx.Resources
                     }
                     else
                     {
-
                         // this is a regular file, we call it's constructor with a stream as a parameter
                         // or if it's a byte array we just return that
                         byte[] temp = null;
@@ -323,21 +305,21 @@ namespace Resx.Resources
                         {
                             Debug.Assert(s != null, "Couldn't open " + fileName);
                             temp = new byte[s.Length];
-                            s.Read(temp, 0, (int)s.Length);
+                            s.Read(temp, 0, (int) s.Length);
                         }
 
-                        if (toCreate.Equals(typeof(byte[])))
+                        if (toCreate == typeof(byte[]))
                         {
                             created = temp;
                         }
                         else
                         {
                             MemoryStream memStream = new MemoryStream(temp);
-                            if (toCreate.Equals(typeof(MemoryStream)))
+                            if (toCreate == typeof(MemoryStream))
                             {
                                 return memStream;
                             }
-                            else if (toCreate.Equals(typeof(Bitmap)) && fileName.EndsWith(".ico"))
+                            else if (toCreate == typeof(Bitmap) && fileName.EndsWith(".ico"))
                             {
                                 // we special case the .ico bitmaps because GDI+ destroy the alpha channel component and
                                 // we don't want that to happen
@@ -346,14 +328,16 @@ namespace Resx.Resources
                             }
                             else
                             {
-                                created = Activator.CreateInstance(toCreate, BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, null, new Object[] { memStream }, null);
+                                created = Activator.CreateInstance(toCreate,
+                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, null,
+                                    new Object[] {memStream}, null);
                             }
                         }
                     }
                 }
+
                 return created;
             }
-
         }
     }
 }

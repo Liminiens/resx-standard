@@ -35,9 +35,11 @@ namespace Resx.Resources
 
         private Hashtable cachedAliases;
 
-        private static TraceSwitch ResValueProviderSwitch = new TraceSwitch("ResX", "Debug the resource value provider");
-        
-        internal static readonly string Beta2CompatSerializedObjectMimeType = "text/microsoft-urt/psuedoml-serialized/base64";
+        private static readonly TraceSwitch ResValueProviderSwitch =
+            new TraceSwitch("ResX", "Debug the resource value provider");
+
+        internal static readonly string Beta2CompatSerializedObjectMimeType =
+            "text/microsoft-urt/psuedoml-serialized/base64";
 
         // These two "compat" mimetypes are here. In Beta 2 and RTM we used the term "URT"
         // internally to refer to parts of the .NET Framework. Since these references
@@ -47,40 +49,45 @@ namespace Resx.Resources
         // write out the new version. So, opening and editing a ResX file in VS will
         // update it to the new types.
         //
-        internal static readonly string CompatBinSerializedObjectMimeType = "text/microsoft-urt/binary-serialized/base64";
-        internal static readonly string CompatSoapSerializedObjectMimeType = "text/microsoft-urt/soap-serialized/base64";
+        internal static readonly string CompatBinSerializedObjectMimeType =
+            "text/microsoft-urt/binary-serialized/base64";
 
-        /// <internalonly/>
+        internal static readonly string CompatSoapSerializedObjectMimeType =
+            "text/microsoft-urt/soap-serialized/base64";
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public static readonly string BinSerializedObjectMimeType = "application/x-microsoft.net.object.binary.base64";
-        /// <internalonly/>
+        public static readonly string BinSerializedObjectMimeType =
+            "application/x-microsoft.net.object.binary.base64";
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public static readonly string SoapSerializedObjectMimeType = "application/x-microsoft.net.object.soap.base64";
-        /// <internalonly/>
+        public static readonly string SoapSerializedObjectMimeType =
+            "application/x-microsoft.net.object.soap.base64";
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
         public static readonly string DefaultSerializedObjectMimeType = BinSerializedObjectMimeType;
-        /// <internalonly/>
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
-        public static readonly string ByteArraySerializedObjectMimeType = "application/x-microsoft.net.object.bytearray.base64";
-        /// <internalonly/>
+        public static readonly string ByteArraySerializedObjectMimeType =
+            "application/x-microsoft.net.object.bytearray.base64";
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
         public static readonly string ResMimeType = "text/microsoft-resx";
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
         public static readonly string Version = "2.0";
-        
-        /// <internalonly/>
+
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
@@ -107,7 +114,8 @@ namespace Resx.Resources
     <data name=""Bitmap1"" mimetype=""" + BinSerializedObjectMimeType + @""">
         <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
-    <data name=""Icon1"" type=""System.Drawing.Icon, System.Drawing"" mimetype=""" + ByteArraySerializedObjectMimeType + @""">
+    <data name=""Icon1"" type=""System.Drawing.Icon, System.Drawing"" mimetype=""" +
+                                                       ByteArraySerializedObjectMimeType + @""">
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
@@ -203,21 +211,16 @@ namespace Resx.Resources
         bool initialized;
 
         private Func<Type, string> typeNameConverter; // no public property to be consistent with ResXDataNode class.
-        
+
         /// <summary>
         ///     Base Path for ResXFileRefs.
         /// </summary>
         public string BasePath
         {
-            get
-            {
-                return basePath;
-            }
-            set
-            {
-                basePath = value;
-            }
+            get { return basePath; }
+            set { basePath = value; }
         }
+
         /// <summary>
         ///     Creates a new ResXResourceWriter that will write to the specified file.
         /// </summary>
@@ -225,12 +228,13 @@ namespace Resx.Resources
         {
             this.fileName = fileName;
         }
+
         public ResXResourceWriter(string fileName, Func<Type, string> typeNameConverter)
         {
             this.fileName = fileName;
             this.typeNameConverter = typeNameConverter;
         }
-        
+
         /// <summary>
         ///     Creates a new ResXResourceWriter that will write to the specified stream.
         /// </summary>
@@ -238,12 +242,13 @@ namespace Resx.Resources
         {
             this.stream = stream;
         }
+
         public ResXResourceWriter(Stream stream, Func<Type, string> typeNameConverter)
         {
             this.stream = stream;
             this.typeNameConverter = typeNameConverter;
         }
-        
+
         /// <summary>
         ///     Creates a new ResXResourceWriter that will write to the specified TextWriter.
         /// </summary>
@@ -251,12 +256,13 @@ namespace Resx.Resources
         {
             this.textWriter = textWriter;
         }
+
         public ResXResourceWriter(TextWriter textWriter, Func<Type, string> typeNameConverter)
         {
             this.textWriter = textWriter;
             this.typeNameConverter = typeNameConverter;
         }
-        
+
         ~ResXResourceWriter()
         {
             Dispose(false);
@@ -286,6 +292,7 @@ namespace Resx.Resources
                     Debug.Assert(fileName != null, "Nothing to output to");
                     xmlTextWriter = new XmlTextWriter(fileName, System.Text.Encoding.UTF8);
                 }
+
                 xmlTextWriter.Formatting = Formatting.Indented;
                 xmlTextWriter.Indentation = 2;
 
@@ -329,7 +336,8 @@ namespace Resx.Resources
                 xmlTextWriter.WriteAttributeString(NameStr, ReaderStr);
                 xmlTextWriter.WriteStartElement(ValueStr);
                 {
-                    xmlTextWriter.WriteString(MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXResourceReader), this.typeNameConverter));
+                    xmlTextWriter.WriteString(MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXResourceReader),
+                        this.typeNameConverter));
                 }
                 xmlTextWriter.WriteEndElement();
             }
@@ -339,7 +347,8 @@ namespace Resx.Resources
                 xmlTextWriter.WriteAttributeString(NameStr, WriterStr);
                 xmlTextWriter.WriteStartElement(ValueStr);
                 {
-                    xmlTextWriter.WriteString(MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXResourceWriter), this.typeNameConverter));
+                    xmlTextWriter.WriteString(MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXResourceWriter),
+                        this.typeNameConverter));
                 }
                 xmlTextWriter.WriteEndElement();
             }
@@ -356,10 +365,11 @@ namespace Resx.Resources
                 {
                     InitializeWriter();
                 }
+
                 return xmlTextWriter;
             }
         }
-        
+
         /// <summary>
         ///    Adds aliases to the resource file...
         /// </summary>
@@ -378,7 +388,7 @@ namespace Resx.Resources
             cachedAliases[assemblyName.FullName] = aliasName;
         }
 
-        
+
         /// <summary>
         ///    Adds the given value to the collection of metadata.  These name/value pairs 
         ///    will be emitted to the <metadata> elements in the .resx file.
@@ -387,7 +397,7 @@ namespace Resx.Resources
         {
             AddDataRow(MetadataStr, name, value);
         }
-        
+
         /// <summary>
         ///    Adds the given value to the collection of metadata.  These name/value pairs 
         ///    will be emitted to the <metadata> elements in the .resx file.
@@ -396,7 +406,7 @@ namespace Resx.Resources
         {
             AddDataRow(MetadataStr, name, value);
         }
-        
+
         /// <summary>
         ///    Adds the given value to the collection of metadata.  These name/value pairs 
         ///    will be emitted to the <metadata> elements in the .resx file.
@@ -405,6 +415,7 @@ namespace Resx.Resources
         {
             AddDataRow(MetadataStr, name, value);
         }
+
         /// <summary>
         ///     Adds a blob resource to the resources.
         /// </summary>
@@ -413,7 +424,7 @@ namespace Resx.Resources
         {
             AddDataRow(DataStr, name, value);
         }
-        
+
         /// <summary>
         ///     Adds a resource to the resources. If the resource is a string,
         ///     it will be saved that way, otherwise it will be serialized
@@ -424,14 +435,14 @@ namespace Resx.Resources
         {
             if (value is ResXDataNode)
             {
-                AddResource((ResXDataNode)value);
+                AddResource((ResXDataNode) value);
             }
             else
             {
                 AddDataRow(DataStr, name, value);
             }
         }
-        
+
         /// <summary>
         ///     Adds a string resource to the resources.
         /// </summary>
@@ -440,6 +451,7 @@ namespace Resx.Resources
         {
             AddDataRow(DataStr, name, value);
         }
+
         /// <summary>
         ///     Adds a string resource to the resources.
         /// </summary>
@@ -459,11 +471,13 @@ namespace Resx.Resources
                 {
                     modifiedBasePath += "\\";
                 }
+
                 if (fileRef != null)
                 {
                     fileRef.MakeFilePathRelative(modifiedBasePath);
                 }
             }
+
             DataNodeInfo info = nodeClone.GetDataNodeInfo();
             AddDataRow(DataStr, info.Name, info.ValueData, info.TypeName, info.MimeType, info.Comment);
         }
@@ -473,7 +487,8 @@ namespace Resx.Resources
         /// </summary>
         private void AddDataRow(string elementName, string name, byte[] value)
         {
-            AddDataRow(elementName, name, ToBase64WrappedString(value), TypeNameWithAssembly(typeof(byte[])), null, null);
+            AddDataRow(elementName, name, ToBase64WrappedString(value), TypeNameWithAssembly(typeof(byte[])), null,
+                null);
         }
 
         /// <summary>
@@ -486,20 +501,21 @@ namespace Resx.Resources
             Debug.WriteLineIf(ResValueProviderSwitch.TraceVerbose, "  resx: adding resource " + name);
             if (value is string)
             {
-                AddDataRow(elementName, name, (string)value);
+                AddDataRow(elementName, name, (string) value);
             }
             else if (value is byte[])
             {
-                AddDataRow(elementName, name, (byte[])value);
+                AddDataRow(elementName, name, (byte[]) value);
             }
             else if (value is ResXFileRef)
             {
-                ResXFileRef fileRef = (ResXFileRef)value;
+                ResXFileRef fileRef = (ResXFileRef) value;
                 ResXDataNode node = new ResXDataNode(name, fileRef, this.typeNameConverter);
                 if (fileRef != null)
                 {
                     fileRef.MakeFilePathRelative(BasePath);
                 }
+
                 DataNodeInfo info = node.GetDataNodeInfo();
                 AddDataRow(elementName, info.Name, info.ValueData, info.TypeName, info.MimeType, info.Comment);
             }
@@ -519,7 +535,8 @@ namespace Resx.Resources
             if (value == null)
             {
                 // if it's a null string, set it here as a resxnullref
-                AddDataRow(elementName, name, value, MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter), null, null);
+                AddDataRow(elementName, name, value,
+                    MultitargetUtil.GetAssemblyQualifiedName(typeof(ResXNullRef), this.typeNameConverter), null, null);
             }
             else
             {
@@ -532,7 +549,8 @@ namespace Resx.Resources
         ///     we want to always late bind to the columns for greater flexibility.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void AddDataRow(string elementName, string name, string value, string type, string mimeType, string comment)
+        private void AddDataRow(string elementName, string name, string value, string type, string mimeType,
+            string comment)
         {
             if (hasBeenSaved)
                 throw new InvalidOperationException(SR.ResXResourceWriterSaved);
@@ -552,7 +570,9 @@ namespace Resx.Resources
                         }
                         else if (typeObject != null)
                         {
-                            assemblyName = GetFullName(MultitargetUtil.GetAssemblyQualifiedName(typeObject, this.typeNameConverter));
+                            assemblyName =
+                                GetFullName(
+                                    MultitargetUtil.GetAssemblyQualifiedName(typeObject, this.typeNameConverter));
                             alias = GetAliasFromName(new AssemblyName(assemblyName));
                         }
                     }
@@ -564,6 +584,7 @@ namespace Resx.Resources
                 {
                     alias = GetAliasFromName(new AssemblyName(GetFullName(type)));
                 }
+
                 //AddAssemblyRow(AssemblyStr, alias, GetFullName(type));
             }
 
@@ -592,7 +613,8 @@ namespace Resx.Resources
                     Writer.WriteAttributeString(MimeTypeStr, mimeType);
                 }
 
-                if ((type == null && mimeType == null) || (type != null && type.StartsWith("System.Char", StringComparison.Ordinal)))
+                if ((type == null && mimeType == null) ||
+                    (type != null && type.StartsWith("System.Char", StringComparison.Ordinal)))
                 {
                     Writer.WriteAttributeString("xml", "space", null, "preserve");
                 }
@@ -620,7 +642,6 @@ namespace Resx.Resources
 
         private void AddAssemblyRow(string elementName, string alias, string name)
         {
-
             Writer.WriteStartElement(elementName);
             {
                 if (!string.IsNullOrEmpty(alias))
@@ -632,6 +653,7 @@ namespace Resx.Resources
                 {
                     Writer.WriteAttributeString(NameStr, name);
                 }
+
                 //Writer.WriteEndElement();
             }
             Writer.WriteEndElement();
@@ -643,17 +665,18 @@ namespace Resx.Resources
             {
                 cachedAliases = new Hashtable();
             }
-            string alias = (string)cachedAliases[assemblyName.FullName];
+
+            string alias = (string) cachedAliases[assemblyName.FullName];
             if (string.IsNullOrEmpty(alias))
             {
                 alias = assemblyName.Name;
                 AddAlias(alias, assemblyName);
                 AddAssemblyRow(AssemblyStr, alias, assemblyName.FullName);
             }
+
             return alias;
         }
 
-        /// <include file='doc\ResXResourceWriter.uex' path='docs/doc[@for="ResXResourceWriter.Close"]/*' />
         /// <summary>
         ///     Closes any files or streams locked by the writer.
         /// </summary>
@@ -663,7 +686,6 @@ namespace Resx.Resources
             Dispose();
         }
 
-        /// <include file='doc\ResXResourceWriter.uex' path='docs/doc[@for="ResXResourceWriter.Dispose"]/*' />
         /// <summary>
         ///    <para>[To be supplied.]</para>
         /// </summary>
@@ -674,7 +696,6 @@ namespace Resx.Resources
             GC.SuppressFinalize(this);
         }
 
-        /// <include file='doc\ResXResourceWriter.uex' path='docs/doc[@for="ResXResourceWriter.Dispose1"]/*' />
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -683,16 +704,19 @@ namespace Resx.Resources
                 {
                     Generate();
                 }
+
                 if (xmlTextWriter != null)
                 {
                     xmlTextWriter.Close();
                     xmlTextWriter = null;
                 }
+
                 if (stream != null)
                 {
                     stream.Close();
                     stream = null;
                 }
+
                 if (textWriter != null)
                 {
                     textWriter.Close();
@@ -723,7 +747,9 @@ namespace Resx.Resources
             string raw = Convert.ToBase64String(data);
             if (raw.Length > lineWrap)
             {
-                StringBuilder output = new StringBuilder(raw.Length + (raw.Length / lineWrap) * 3); // word wrap on lineWrap chars, \r\n
+                StringBuilder
+                    output = new StringBuilder(raw.Length +
+                                               (raw.Length / lineWrap) * 3); // word wrap on lineWrap chars, \r\n
                 int current = 0;
                 for (; current < raw.Length - lineWrap; current += lineWrap)
                 {
@@ -731,6 +757,7 @@ namespace Resx.Resources
                     output.Append(prefix);
                     output.Append(raw, current, lineWrap);
                 }
+
                 output.Append(crlf);
                 output.Append(prefix);
                 output.Append(raw, current, raw.Length - current);
@@ -748,6 +775,7 @@ namespace Resx.Resources
             string result = MultitargetUtil.GetAssemblyQualifiedName(type, this.typeNameConverter);
             return result;
         }
+
         /// <summary>
         ///     Writes the resources out to the file or stream.
         /// </summary>
@@ -767,6 +795,3 @@ namespace Resx.Resources
         }
     }
 }
-
-
-
