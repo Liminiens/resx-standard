@@ -28,6 +28,28 @@ namespace Resx.Tests
         }
 
         [Fact]
+        public void Bitmap_WhenIsFile_IsCorrect()
+        {
+            using (var reader = new ResXResourceReader(TestResxFile.File()))
+            {
+                reader.UseResXDataNodes = true;
+
+                var file = reader
+                    .Cast<DictionaryEntry>()
+                    .Select(x => (ResXDataNode) x.Value)
+                    .First(x => x.FileRef.FileName == "Resources\\Image1.bmp");
+
+                var value = (Bitmap)file.GetValue((ITypeResolutionService)null);
+
+                var typeName = file.GetValueTypeName((ITypeResolutionService)null);
+
+                Assert.NotNull(value);
+                Assert.False(value.Size.IsEmpty);
+                Assert.Equal(typeof(Bitmap).AssemblyQualifiedName, typeName);
+            }
+        }
+
+        [Fact]
         public void Photo_WhenRetrieved_IsCorrect()
         {
             using (var reader = new ResXResourceReader(TestResxFile.File()))

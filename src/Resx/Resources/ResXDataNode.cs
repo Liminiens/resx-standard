@@ -815,7 +815,7 @@ namespace Resx.Resources
 
         private Type ResolveType(string typeName, ITypeResolutionService typeResolver)
         {
-            if (typeName.Contains(", System.Drawing"))
+            if (!typeName.Contains(", System.Drawing.Common") && typeName.Contains(", System.Drawing"))
             {
                 typeName = typeName.Replace(", System.Drawing", ", System.Drawing.Common");
             }
